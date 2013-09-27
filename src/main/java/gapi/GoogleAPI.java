@@ -29,8 +29,9 @@ public class GoogleAPI {
 					.setJsonFactory(getJsonFactory())
 					.setServiceAccountId(Setup.getServiceAccountEmail())
 					.setServiceAccountScopes(
-							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))
+							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))							
 					.setServiceAccountPrivateKeyFromP12File(new File(Setup.getServiceAccountKeyPath())).build();
+			// TODO let key file to be read also from a resource
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
