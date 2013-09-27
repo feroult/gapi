@@ -1,6 +1,7 @@
-package gapi.google;
+package gapi;
 
 import static org.junit.Assert.assertEquals;
+import gapi.GoogleAPI;
 
 import java.util.List;
 import java.util.Map;

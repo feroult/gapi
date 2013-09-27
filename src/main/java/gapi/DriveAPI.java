@@ -1,4 +1,4 @@
-package gapi.google;
+package gapi;
 
 import com.google.api.services.drive.Drive;
 

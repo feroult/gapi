@@ -1,4 +1,6 @@
-package gapi.google;
+package gapi;
+
+import gapi.SpreadsheetBatch;
 
 public class MockTableBatch implements SpreadsheetBatch {
 

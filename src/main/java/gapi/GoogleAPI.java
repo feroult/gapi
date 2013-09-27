@@ -1,4 +1,4 @@
-package gapi.google;
+package gapi;
 
 import gapi.utils.Setup;
 

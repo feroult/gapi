@@ -1,4 +1,4 @@
-package gapi.google;
+package gapi;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
