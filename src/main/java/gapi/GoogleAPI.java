@@ -2,7 +2,6 @@ package gapi;
 
 import gapi.utils.Setup;
 
-import java.io.File;
 import java.util.Arrays;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -30,8 +29,7 @@ public class GoogleAPI {
 					.setServiceAccountId(Setup.getServiceAccountEmail())
 					.setServiceAccountScopes(
 							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))							
-					.setServiceAccountPrivateKeyFromP12File(new File(Setup.getServiceAccountKeyPath())).build();
-			// TODO let key file to be read also from a resource
+					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
