@@ -1,7 +1,7 @@
 package gapi;
 
 import static org.junit.Assert.assertEquals;
-import gapi.GoogleAPI;
+import gapi.utils.Setup;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,13 @@ public class GoogleAPITest {
 
 	@Before
 	public void before() {
+		setup();
 		google = new GoogleAPI();
+	}
+
+	private void setup() {
+		System.setProperty(Setup.GAPI_SERVICE_ACCOUNT_EMAIL, System.getenv("GAPI_SERVICE_ACCOUNT_EMAIL"));
+		System.setProperty(Setup.GAPI_SERVICE_ACCOUNT_KEY, System.getenv("GAPI_SERVICE_ACCOUNT_KEY")); 
 	}
 
 	@Test
