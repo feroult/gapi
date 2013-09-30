@@ -4,16 +4,29 @@ import java.io.File;
 import java.net.URL;
 
 public class Setup {
-
-	public static final String GAPI_SERVICE_ACCOUNT_EMAIL = "gapi.service.account.email";
-	public static final String GAPI_SERVICE_ACCOUNT_KEY = "gapi.service.account.key";
+	
+	private static final String GAPI_SERVICE_ACCOUNT_EMAIL = "gapi.service.account.email";
+	private static final String GAPI_SERVICE_ACCOUNT_KEY = "gapi.service.account.key";
+	
+	private static final String GAPI_SERVICE_ACCOUNT_EMAIL_ENV = "GAPI_SERVICE_ACCOUNT_EMAIL";
+	private static final String GAPI_SERVICE_ACCOUNT_KEY_ENV = "GAPI_SERVICE_ACCOUNT_KEY";
 
 	public static String getServiceAccountEmail() {
-		return System.getProperty(GAPI_SERVICE_ACCOUNT_EMAIL);
+		return getProperty(GAPI_SERVICE_ACCOUNT_EMAIL, GAPI_SERVICE_ACCOUNT_EMAIL_ENV);
 	}
 
 	private static String getServiceAccountKey() {
-		return System.getProperty(GAPI_SERVICE_ACCOUNT_KEY);
+		return getProperty(GAPI_SERVICE_ACCOUNT_KEY, GAPI_SERVICE_ACCOUNT_KEY_ENV);
+	}
+	
+	private static String getProperty(String propertyKey, String environmentKey) {
+		String property = System.getProperty(propertyKey);
+		
+		if(property == null) {
+			return System.getenv(environmentKey);
+		}
+		
+		return property;
 	}
 
 	public static File getServiceAccountKeyFile() {
@@ -22,6 +35,6 @@ public class Setup {
 			return new File(resource.getFile());
 		}
 
-		return new File(Setup.getServiceAccountKey());
-	}
+		return new File(getServiceAccountKey());
+	}	
 }
