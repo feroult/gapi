@@ -91,10 +91,6 @@ public class SpreadsheetAPI {
 	}
 
 	public SpreadsheetAPI worksheet(String title) {
-		if (worksheet != null && worksheet.getTitle().getPlainText().equals(title)) {
-			return this;
-		}
-
 		try {
 			worksheet = getWorksheetByTitle(title);
 
@@ -132,12 +128,12 @@ public class SpreadsheetAPI {
 		return worksheets.get(0);
 	}
 
-	public void batch(SpreadsheetBatch batch) {
+	public void batch(SpreadsheetBatch batch, BatchOptions ... options) {
 		try {
 			int batchRows = 0;
 			int sentRows = 0;
 			
-			adjustWorksheetDimensions(batch);
+			adjustWorksheetDimensions(batch, options);
 			
 			while (sentRows < batch.rows()) {
 				batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
@@ -205,7 +201,7 @@ public class SpreadsheetAPI {
 		return cellFeed;
 	}
 
-	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet) throws IOException, ServiceException {
+	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions ... options) throws IOException, ServiceException {
 		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
 			return;
 		}
@@ -213,11 +209,19 @@ public class SpreadsheetAPI {
 		if (worksheet.getColCount() < updateSet.cols()) {
 			worksheet.setColCount(updateSet.cols());
 		}
+		
+		if (worksheet.getColCount() > updateSet.cols() && BatchOptions.SHRINK.on(options)) {
+			worksheet.setColCount(updateSet.cols());
+		}		
 
 		if (worksheet.getRowCount() < updateSet.rows()) {
 			worksheet.setRowCount(updateSet.rows());
 		}
 
+		if (worksheet.getRowCount() > updateSet.rows() && BatchOptions.SHRINK.on(options)) {
+			worksheet.setRowCount(updateSet.rows());
+		}		
+		
 		worksheet.update();
 	}
 

@@ -36,6 +36,30 @@ public class GoogleAPITest {
 
 		google.drive().delete(key);
 	}
+	
+	@Test
+	public void testSpreadsheetBatchShrinkOption() {
+		
+		String[][] twoRowsTable = new String[][] { {"name", "age"}, { "john", "30" } };
+		String[][] threeRowsTable = new String[][] { {"name", "age"}, { "john", "30" }, { "anne", "40" }}; 
+				
+		String key = google.drive().createSpreadsheet();
+		
+		try {
+			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(threeRowsTable));
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMap().size());
+			
+			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable));
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMap().size());			
+			
+			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable), BatchOptions.SHRINK);
+			assertEquals(1, google.spreadsheet(key).worksheet("xpto").asMap().size());						
+			
+		} finally {
+			google.drive().delete(key);
+		}		
+		
+	}
 
 	@Test
 	public void testLoadSpreadsheetHash() {
