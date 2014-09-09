@@ -25,6 +25,7 @@ import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetAPI {
@@ -50,7 +51,9 @@ public class SpreadsheetAPI {
 			String spreadsheetURL = "https://spreadsheets.google.com/feeds/spreadsheets/" + key;
 			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);
 			resetWorksheet();
-		} catch (Exception e) {
+		} catch (ResourceNotFoundException e) {
+			return null;
+		} catch (IOException | ServiceException e) {
 			throw new RuntimeException(e);
 		}
 		return this;
