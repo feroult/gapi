@@ -2,6 +2,7 @@ package gapi;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class GoogleAPITest {
 
 	@Before
 	public void before() {
-		google = new GoogleAPI();
+		google = new GoogleAPI(Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"));
 	}
 
 	@Test

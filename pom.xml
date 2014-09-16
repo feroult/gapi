@@ -45,6 +45,12 @@
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-admin-directory</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-gson</artifactId>
@@ -156,22 +162,27 @@
 			<dependency>
 				<groupId>com.google.api-client</groupId>
 				<artifactId>google-api-client</artifactId>
-				<version>1.16.0-rc</version>
+				<version>1.18.0-rc</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.apis</groupId>
+				<artifactId>google-api-services-admin-directory</artifactId>
+				<version>directory_v1-rev41-1.18.0-rc</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.api-client</groupId>
 				<artifactId>google-api-client-gson</artifactId>
-				<version>1.16.0-rc</version>
+				<version>1.18.0-rc</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-oauth2</artifactId>
-				<version>v2-rev41-1.15.0-rc</version>
-			</dependency>
+				<version>v2-rev78-1.18.0-rc</version>
+			</dependency>	
 			<dependency>
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-drive</artifactId>
-				<version>v2-rev89-1.15.0-rc</version>
+				<version>v2-rev143-1.18.0-rc</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
