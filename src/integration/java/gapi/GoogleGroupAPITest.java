@@ -7,6 +7,7 @@ import gapi.utils.Setup;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.Group;
 import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.Member;
@@ -24,25 +26,22 @@ public class GoogleGroupAPITest {
 	private GoogleGroupAPI googleGroup;
 
 	public GoogleGroupAPITest() throws GeneralSecurityException, IOException, URISyntaxException {
-		googleGroup = new GoogleGroupAPI();
+		List<String> serviceAccountScopes = new ArrayList<String>();
+		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_USER);
+		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
+		
+		googleGroup = new GoogleAPI(serviceAccountScopes).group();
 	}
 	
-	@Before
-	public void before() throws IOException {
-		try {
-			googleGroup.delete(EMAIL);
-		} catch (GoogleJsonResponseException e) {
-		}
-	}
-	
+	@Before 
 	@After
-	public void after() throws IOException {
+	public void setup() throws IOException {
 		try {
 			googleGroup.delete(EMAIL);
 		} catch (GoogleJsonResponseException e) {
 		}
 	}
-	
+
 	@Test
 	public void testDeleteGroup() throws IOException {
 		String name = "group";

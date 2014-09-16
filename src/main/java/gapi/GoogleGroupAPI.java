@@ -1,28 +1,18 @@
 package gapi;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.Group;
 import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 
 public class GoogleGroupAPI {
-	private GoogleAPI googleAPI;
 	private Directory directory;
 	
-	public GoogleGroupAPI() throws GeneralSecurityException, IOException, URISyntaxException {
-		List<String> serviceAccountScopes = new ArrayList<String>();
-		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_USER);
-		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
-		googleAPI = new GoogleAPI(serviceAccountScopes);
-		directory = googleAPI.getDirectoryService();
+	public GoogleGroupAPI(Directory directory) {
+		this.directory = directory;
 	}
 
 	public Group create(Group group) throws IOException{

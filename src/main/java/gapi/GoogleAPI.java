@@ -5,6 +5,7 @@ import gapi.utils.Setup;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -24,7 +25,23 @@ public class GoogleAPI {
 	private DriveAPI drive;
 
 	private SpreadsheetAPI spreadsheet;
+	
+	private GoogleGroupAPI group;
 
+	public GoogleAPI() {
+		try {
+			credential = new GoogleCredential.Builder()
+							.setTransport(getTransport())
+							.setJsonFactory(getJsonFactory())
+							.setServiceAccountId(Setup.getServiceAccountEmail())
+							.setServiceAccountScopes(
+							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))							
+							.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public GoogleAPI(List<String> accountscopes) {
 		try {
 			credential = new GoogleCredential.Builder()
@@ -71,7 +88,14 @@ public class GoogleAPI {
 		return spreadsheet.key(key);
 	}
 
-	public Directory getDirectoryService() throws GeneralSecurityException, IOException, URISyntaxException {
+	public GoogleGroupAPI group() throws GeneralSecurityException, IOException, URISyntaxException {
+		if (group == null) {
+			group = new GoogleGroupAPI(directoryService());
+		}
+		return group;
+	}
+	
+	public Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
 		return new Directory.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
 	}
 }
