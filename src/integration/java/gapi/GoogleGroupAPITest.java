@@ -22,10 +22,13 @@ import com.google.api.services.admin.directory.model.Members;
 public class GoogleGroupAPITest {
 	private static final String EMAIL = "group@6spot.com.br";
 	private GoogleGroupAPI googleGroup;
+
+	public GoogleGroupAPITest() throws GeneralSecurityException, IOException, URISyntaxException {
+		googleGroup = new GoogleGroupAPI();
+	}
 	
 	@Before
-	public void before() throws GeneralSecurityException, IOException, URISyntaxException {
-		googleGroup = new GoogleGroupAPI();
+	public void before() throws IOException {
 		try {
 			googleGroup.delete(EMAIL);
 		} catch (GoogleJsonResponseException e) {
