@@ -1,4 +1,4 @@
-gapi - Google API
+Google API (gapi)
 ====
 
 Easy enough (for me) Google API
