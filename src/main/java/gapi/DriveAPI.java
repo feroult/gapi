@@ -5,7 +5,8 @@ import com.google.api.services.drive.Drive;
 public class DriveAPI {
 
 	private Drive driveService;
-
+	
+	@Deprecated
 	public DriveAPI(Drive driveService) {
 		this.driveService = driveService;
 	}

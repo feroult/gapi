@@ -27,7 +27,6 @@ public class GoogleGroupAPITest {
 
 	public GoogleGroupAPITest() throws GeneralSecurityException, IOException, URISyntaxException {
 		List<String> serviceAccountScopes = new ArrayList<String>();
-		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_USER);
 		serviceAccountScopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 		
 		googleGroup = new GoogleAPI(serviceAccountScopes).group();

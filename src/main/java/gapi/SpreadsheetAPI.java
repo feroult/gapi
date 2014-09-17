@@ -37,7 +37,8 @@ public class SpreadsheetAPI {
 	private SpreadsheetEntry spreadsheet;
 
 	private WorksheetEntry worksheet;
-
+	
+	@Deprecated
 	public SpreadsheetAPI(SpreadsheetService spreadsheetService) {
 		this.spreadsheetService = spreadsheetService;
 	}
