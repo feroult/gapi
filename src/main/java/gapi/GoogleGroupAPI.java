@@ -11,7 +11,7 @@ import com.google.api.services.admin.directory.model.Members;
 public class GoogleGroupAPI {
 	private Directory directory;
 	
-	public GoogleGroupAPI(Directory directory) {
+	GoogleGroupAPI(Directory directory) {
 		this.directory = directory;
 	}
 
