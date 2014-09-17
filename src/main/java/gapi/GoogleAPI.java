@@ -95,7 +95,7 @@ public class GoogleAPI {
 		return group;
 	}
 	
-	public Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
+	private Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
 		return new Directory.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
 	}
 }
