@@ -9,7 +9,6 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
@@ -93,11 +92,13 @@ public class GoogleAPI {
 	}
 	
 	private Credential generateCredentialForGae(List<String> accountscopes) {
-		AppIdentityCredential appIdentityCredential = new AppIdentityCredential(accountscopes);
+		AppIdentityCredential appIdentityCredential = new AppIdentityCredential.Builder(accountscopes).build();
 		AppIdentityService appIdentityService = appIdentityCredential.getAppIdentityService();
-		GetAccessTokenResult accessToken = appIdentityService.getAccessToken(accountscopes);
-		Credential cred = new Credential(BearerToken.authorizationHeaderAccessMethod());
-		cred.setAccessToken(accessToken.getAccessToken());
+		GetAccessTokenResult accessTokenResult = appIdentityService.getAccessToken(accountscopes);
+		
+		GoogleCredential cred = new GoogleCredential();
+		cred.setAccessToken(accessTokenResult.getAccessToken());
+		cred.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
 		return cred;
 	}
 	
