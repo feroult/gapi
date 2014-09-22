@@ -16,19 +16,16 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 public class GoogleAPI {
 
 	private Credential credential;
-	
+
 	private DriveAPI drive;
 
 	private SpreadsheetAPI spreadsheet;
 
 	public GoogleAPI() {
 		try {
-			credential = new GoogleCredential.Builder()
-					.setTransport(getTransport())
-					.setJsonFactory(getJsonFactory())
+			credential = new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
 					.setServiceAccountId(Setup.getServiceAccountEmail())
-					.setServiceAccountScopes(
-							Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))							
+					.setServiceAccountScopes(Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds"))
 					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -44,27 +41,27 @@ public class GoogleAPI {
 	}
 
 	private Drive driveService() {
-		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("Query Sheet")
-				.build();
+		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("Query Sheet").build();
 	}
 
 	public SpreadsheetService spreadsheetService() {
 		SpreadsheetService service = new SpreadsheetService("Query Sheet");
 		service.setOAuth2Credentials(credential);
+		service.setConnectTimeout(60000);
 		return service;
 	}
 
 	public DriveAPI drive() {
-		if(drive == null) {
+		if (drive == null) {
 			drive = new DriveAPI(driveService());
 		}
 		return drive;
 	}
 
 	public SpreadsheetAPI spreadsheet(String key) {
-		if(spreadsheet == null) {
+		if (spreadsheet == null) {
 			spreadsheet = new SpreadsheetAPI(spreadsheetService());
-		} 
+		}
 		return spreadsheet.key(key);
 	}
 
