@@ -107,6 +107,15 @@ public class SpreadsheetAPI {
 		}
 	}
 
+	public boolean hasWorksheet(String title) {
+		try {
+			worksheet = getWorksheetByTitle(title);
+			return worksheet != null;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private WorksheetEntry createWorksheet(String title) throws IOException, ServiceException {
 		WorksheetEntry worksheet = new WorksheetEntry();
 		worksheet.setTitle(new PlainTextConstruct(title));
@@ -131,13 +140,13 @@ public class SpreadsheetAPI {
 		return worksheets.get(0);
 	}
 
-	public void batch(SpreadsheetBatch batch, BatchOptions ... options) {
+	public void batch(SpreadsheetBatch batch, BatchOptions... options) {
 		try {
 			int batchRows = 0;
 			int sentRows = 0;
-			
+
 			adjustWorksheetDimensions(batch, options);
-			
+
 			while (sentRows < batch.rows()) {
 				batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
 
@@ -146,7 +155,7 @@ public class SpreadsheetAPI {
 				CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
 
 				checkBatchResponse(batchResponse);
-				
+
 				sentRows += batchRows;
 			}
 
@@ -155,8 +164,8 @@ public class SpreadsheetAPI {
 		}
 	}
 
-	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException,
-			ServiceException, BatchInterruptedException, MalformedURLException {
+	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException,
+			BatchInterruptedException, MalformedURLException {
 		Link batchLink = cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
 
 		spreadsheetService.setHeader("If-Match", "*");
@@ -189,8 +198,7 @@ public class SpreadsheetAPI {
 		return batchRequest;
 	}
 
-	private CellFeed queryCellFeedForBatch(SpreadsheetBatch batch, int sentRows, int batchRows) throws IOException,
-			ServiceException {		
+	private CellFeed queryCellFeedForBatch(SpreadsheetBatch batch, int sentRows, int batchRows) throws IOException, ServiceException {
 
 		CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
 
@@ -204,7 +212,7 @@ public class SpreadsheetAPI {
 		return cellFeed;
 	}
 
-	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions ... options) throws IOException, ServiceException {
+	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions... options) throws IOException, ServiceException {
 		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
 			return;
 		}
@@ -212,10 +220,10 @@ public class SpreadsheetAPI {
 		if (worksheet.getColCount() < updateSet.cols()) {
 			worksheet.setColCount(updateSet.cols());
 		}
-		
+
 		if (worksheet.getColCount() > updateSet.cols() && BatchOptions.SHRINK.on(options)) {
 			worksheet.setColCount(updateSet.cols());
-		}		
+		}
 
 		if (worksheet.getRowCount() < updateSet.rows()) {
 			worksheet.setRowCount(updateSet.rows());
@@ -223,8 +231,8 @@ public class SpreadsheetAPI {
 
 		if (worksheet.getRowCount() > updateSet.rows() && BatchOptions.SHRINK.on(options)) {
 			worksheet.setRowCount(updateSet.rows());
-		}		
-		
+		}
+
 		worksheet.update();
 	}
 
@@ -233,8 +241,7 @@ public class SpreadsheetAPI {
 			String batchId = BatchUtils.getBatchId(entry);
 			if (!BatchUtils.isSuccess(entry)) {
 				BatchStatus status = BatchUtils.getBatchStatus(entry);
-				throw new RuntimeException(MessageFormat.format("update failed batchId={0}, reason={1}", batchId,
-						status.getReason()));
+				throw new RuntimeException(MessageFormat.format("update failed batchId={0}, reason={1}", batchId, status.getReason()));
 			}
 		}
 	}
