@@ -47,7 +47,7 @@ public class GoogleAPI {
 	public SpreadsheetService spreadsheetService() {
 		SpreadsheetService service = new SpreadsheetService("Query Sheet");
 		service.setOAuth2Credentials(credential);
-		service.setConnectTimeout(60000);
+		service.setConnectTimeout(120 * 1000);
 		return service;
 	}
 
