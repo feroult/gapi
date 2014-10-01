@@ -22,7 +22,7 @@ import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 
 public class GoogleGroupAPITest {
-	private static final String EMAIL = "group@6spot.com.br";
+	private static final String EMAIL = "group@dextra-sw.com";
 	private GoogleGroupAPI googleGroup;
 
 	public GoogleGroupAPITest() throws GeneralSecurityException, IOException, URISyntaxException {

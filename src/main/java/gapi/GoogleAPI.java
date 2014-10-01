@@ -1,6 +1,5 @@
 package gapi;
 
-import gapi.utils.EnvironmentUtil;
 import gapi.utils.Setup;
 
 import java.io.IOException;
@@ -11,15 +10,12 @@ import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.drive.Drive;
-import com.google.appengine.api.appidentity.AppIdentityService;
-import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenResult;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
 public class GoogleAPI {
@@ -32,11 +28,7 @@ public class GoogleAPI {
 		try {
 			List<String> accountscopes = Arrays.asList("https://spreadsheets.google.com/feeds", 
 													   "https://docs.google.com/feeds");
-			if (EnvironmentUtil.isGae()) {
-				credential = generateCredentialForGae(accountscopes);
-			} else {
-				credential = generateCredentialWithP12(accountscopes);
-			}
+			credential = generateCredentialWithP12(accountscopes);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -44,11 +36,7 @@ public class GoogleAPI {
 
 	public GoogleAPI(List<String> accountscopes) {
 		try {
-			if (EnvironmentUtil.isGae()) {
-				credential = generateCredentialForGae(accountscopes);
-			} else {
-				credential = generateCredentialWithP12(accountscopes);
-			}
+			credential = generateCredentialWithP12(accountscopes);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -91,16 +79,16 @@ public class GoogleAPI {
 					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
 	}
 	
-	private Credential generateCredentialForGae(List<String> accountscopes) {
-		AppIdentityCredential appIdentityCredential = new AppIdentityCredential.Builder(accountscopes).build();
-		AppIdentityService appIdentityService = appIdentityCredential.getAppIdentityService();
-		GetAccessTokenResult accessTokenResult = appIdentityService.getAccessToken(accountscopes);
-		
-		GoogleCredential cred = new GoogleCredential();
-		cred.setAccessToken(accessTokenResult.getAccessToken());
-		cred.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
-		return cred;
-	}
+//	private Credential generateCredentialForGae(List<String> accountscopes) {
+//		AppIdentityCredential appIdentityCredential = new AppIdentityCredential.Builder(accountscopes).build();
+//		AppIdentityService appIdentityService = appIdentityCredential.getAppIdentityService();
+//		GetAccessTokenResult accessTokenResult = appIdentityService.getAccessToken(accountscopes);
+//		
+//		GoogleCredential cred = new GoogleCredential();
+//		cred.setAccessToken(accessTokenResult.getAccessToken());
+//		cred.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
+//		return cred;
+//	}
 	
 	private HttpTransport getTransport() {
 		return new NetHttpTransport();
