@@ -33,10 +33,10 @@ public class GoogleAPI {
 
 			List<String> scopes = Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds");
 
-			if (Setup.isAppEngineProduction()) {
-				credential = generateCredentialForGae(scopes);
-				return;
-			}
+//			if (Setup.isAppEngineProduction()) {
+//				credential = generateCredentialForGae(scopes);
+//				return;
+//			}
 
 			credential = generateCredentialWithP12(scopes);
 
