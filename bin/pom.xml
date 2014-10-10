@@ -45,18 +45,12 @@
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-admin-directory</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client-appengine</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-1.0-sdk</artifactId>
-		</dependency>		
+		
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client-gson</artifactId>
@@ -171,11 +165,6 @@
 				<version>1.18.0-rc</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.api-client</groupId>
-				<artifactId>google-api-client-appengine</artifactId>
-				<version>1.18.0-rc</version>
-			</dependency>
-			<dependency>
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-admin-directory</artifactId>
 				<version>directory_v1-rev41-1.18.0-rc</version>
@@ -184,11 +173,6 @@
 				<groupId>com.google.api-client</groupId>
 				<artifactId>google-api-client-gson</artifactId>
 				<version>1.18.0-rc</version>
-			</dependency>
-			<dependency>
-			<groupId>com.google.appengine</groupId>
-				<artifactId>appengine-api-1.0-sdk</artifactId>
-				<version>1.7.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.apis</groupId>
