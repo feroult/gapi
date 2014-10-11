@@ -20,15 +20,15 @@ public class DriveAPI {
 			file = driveService.files().insert(file).execute();
 
 			return file.getId();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void delete(String key)  {
+	public void delete(String key) {
 		try {
 			driveService.files().delete(key).execute();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

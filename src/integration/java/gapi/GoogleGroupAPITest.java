@@ -7,12 +7,12 @@ import gapi.utils.Setup;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -22,6 +22,7 @@ import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 
+@Ignore
 public class GoogleGroupAPITest {
 	private static final String EMAIL = "group@6spot.com.br";
 	private GoogleGroupAPI googleGroup;

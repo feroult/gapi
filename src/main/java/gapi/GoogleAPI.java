@@ -33,10 +33,10 @@ public class GoogleAPI {
 
 			List<String> scopes = Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds");
 
-//			if (Setup.isAppEngineProduction()) {
-//				credential = generateCredentialForGae(scopes);
-//				return;
-//			}
+			// if (Setup.isAppEngineProduction()) {
+			// credential = generateCredentialForGae(scopes);
+			// return;
+			// }
 
 			credential = generateCredentialWithP12(scopes);
 
@@ -84,7 +84,7 @@ public class GoogleAPI {
 	private GoogleCredential generateCredentialWithP12(List<String> scopes) throws GeneralSecurityException, IOException {
 		return new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
 				.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
-				//.setServiceAccountUser(Setup.getServiceAccountUser())
+				// .setServiceAccountUser(Setup.getServiceAccountUser())
 				.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
 	}
 
