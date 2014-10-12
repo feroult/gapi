@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 public class SpreadsheetAPI {
+
+	public static List<String> SCOPES = Arrays.asList("https://spreadsheets.google.com/feeds");
 
 	private static final int MAX_BATCH_ROWS = 500;
 

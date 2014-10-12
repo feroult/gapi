@@ -1,6 +1,7 @@
 package gapi;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
 
 import com.google.api.client.googleapis.json.GoogleJsonError;
@@ -12,18 +13,21 @@ import com.google.api.services.admin.directory.Directory.Groups.Insert;
 import com.google.api.services.admin.directory.Directory.Groups.List;
 import com.google.api.services.admin.directory.Directory.Groups.Update;
 import com.google.api.services.admin.directory.DirectoryRequest;
+import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.Group;
 import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 
-public class GoogleGroupAPI {
+public class DirectoryAPI {
+
+	public static java.util.List<String> SCOPES = Arrays.asList(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 
 	private Directory directory;
 
 	private static final Random randomGenerator = new Random();
 
-	GoogleGroupAPI(Directory directory) {
+	DirectoryAPI(Directory directory) {
 		this.directory = directory;
 	}
 
@@ -73,10 +77,12 @@ public class GoogleGroupAPI {
 		return (Members) execute(list);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static Object execute(DirectoryRequest request) throws IOException {
 		return execute(request, 1);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static Object execute(DirectoryRequest request, int interval) throws IOException {
 		try {
 			return request.execute();

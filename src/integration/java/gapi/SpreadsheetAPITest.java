@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GoogleAPITest {
+public class SpreadsheetAPITest {
 
 	private final String[][] peopleTable = new String[][] { { "id", "name", "age" }, { "1", "John", "10" }, { "2", "Anne", "15" } };
 

@@ -1,8 +1,13 @@
 package gapi;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.api.services.drive.Drive;
 
 public class DriveAPI {
+
+	public static List<String> SCOPES = Arrays.asList("https://docs.google.com/feeds");
 
 	private Drive driveService;
 

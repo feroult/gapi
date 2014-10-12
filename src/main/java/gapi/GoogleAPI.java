@@ -5,11 +5,11 @@ import gapi.utils.Setup;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder;
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -22,43 +22,12 @@ import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenRes
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
 public class GoogleAPI {
-	private Credential credential;
 
 	private DriveAPI drive;
+
 	private SpreadsheetAPI spreadsheet;
-	private GoogleGroupAPI group;
 
-	public GoogleAPI() {
-		try {
-
-			List<String> scopes = Arrays.asList("https://spreadsheets.google.com/feeds", "https://docs.google.com/feeds");
-
-			// if (Setup.isAppEngineProduction()) {
-			// credential = generateCredentialForGae(scopes);
-			// return;
-			// }
-
-			credential = generateCredentialWithP12(scopes);
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public GoogleAPI(List<String> accountscopes) {
-		try {
-			credential = generateCredentialWithP12(accountscopes);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public SpreadsheetService spreadsheetService() {
-		SpreadsheetService service = new SpreadsheetService("gapi");
-		service.setOAuth2Credentials(credential);
-		service.setConnectTimeout(120 * 1000);
-		return service;
-	}
+	private DirectoryAPI group;
 
 	public DriveAPI drive() {
 		if (drive == null) {
@@ -74,18 +43,31 @@ public class GoogleAPI {
 		return spreadsheet.key(key);
 	}
 
-	public GoogleGroupAPI group() throws GeneralSecurityException, IOException, URISyntaxException {
+	public DirectoryAPI directory() throws GeneralSecurityException, IOException, URISyntaxException {
 		if (group == null) {
-			group = new GoogleGroupAPI(directoryService());
+			group = new DirectoryAPI(directoryService());
 		}
 		return group;
 	}
 
-	private GoogleCredential generateCredentialWithP12(List<String> scopes) throws GeneralSecurityException, IOException {
-		return new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
-				.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
-				// .setServiceAccountUser(Setup.getServiceAccountUser())
-				.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile()).build();
+	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
+		return generateCredentialWithP12(scopes, userServiceAccountUser);
+	}
+
+	private GoogleCredential generateCredentialWithP12(List<String> scopes, boolean userServiceAccountUser) {
+		try {
+			Builder builder = new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
+					.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
+					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
+
+			if (userServiceAccountUser) {
+				builder.setServiceAccountUser(Setup.getServiceAccountUser());
+			}
+
+			return builder.build();
+		} catch (GeneralSecurityException | IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private Credential generateCredentialForGae(List<String> scopes) {
@@ -99,20 +81,30 @@ public class GoogleAPI {
 		return cred;
 	}
 
+	private SpreadsheetService spreadsheetService() {
+		SpreadsheetService service = new SpreadsheetService("gapi");
+		service.setOAuth2Credentials(createCredential(SpreadsheetAPI.SCOPES, false));
+		service.setConnectTimeout(120 * 1000);
+		return service;
+	}
+
+	private Drive driveService() {
+		Credential credential = createCredential(DriveAPI.SCOPES, false);
+		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
+	}
+
+	private Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
+		Directory.Builder builder = new Directory.Builder(getTransport(), getJsonFactory(), createCredential(DirectoryAPI.SCOPES, true));
+		builder.setApplicationName("gapi");
+		return builder.build();
+	}
+
 	private HttpTransport getTransport() {
 		return new NetHttpTransport();
 	}
 
 	private JsonFactory getJsonFactory() {
 		return new GsonFactory();
-	}
-
-	private Drive driveService() {
-		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
-	}
-
-	private Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
-		return new Directory.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
 	}
 
 }
