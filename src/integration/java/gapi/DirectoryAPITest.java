@@ -33,10 +33,7 @@ public class DirectoryAPITest {
 	@Before
 	@After
 	public void setup() throws IOException {
-		try {
-			directory.delete(EMAIL);
-		} catch (GoogleJsonResponseException e) {
-		}
+		directory.delete(EMAIL);
 	}
 
 	@Test
@@ -102,12 +99,7 @@ public class DirectoryAPITest {
 		assertEquals(member.getRole(), memberGroup.getRole());
 
 		directory.deleteMemberGroup(group, member.getEmail());
-
-		try {
-			directory.getMemberGroup(group, member.getEmail());
-		} catch (GoogleJsonResponseException e) {
-			assertTrue(true);
-		}
+		directory.getMemberGroup(group, member.getEmail());
 	}
 
 	@Test

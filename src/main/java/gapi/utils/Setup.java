@@ -53,4 +53,8 @@ public class Setup {
 	public static boolean isAppengineDevelopment() {
 		return SystemProperty.environment.value() == SystemProperty.Environment.Value.Development;
 	}
+
+	public static boolean isAppengine() {
+		return isAppEngineProduction() || isAppengineDevelopment();
+	}
 }

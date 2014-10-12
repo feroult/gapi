@@ -31,50 +31,87 @@ public class DirectoryAPI {
 		this.directory = directory;
 	}
 
-	public Group create(Group group) throws IOException {
-		Insert insert = directory.groups().insert(group);
-		return (Group) execute(insert);
+	public Group create(Group group) {
+		Insert insert;
+		try {
+			insert = directory.groups().insert(group);
+			return (Group) execute(insert);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Group update(String groupKey, Group group) throws IOException {
-		Update update = directory.groups().update(groupKey, group);
-		return (Group) execute(update);
+	public Group update(String groupKey, Group group) {
+		try {
+			Update update = directory.groups().update(groupKey, group);
+			return (Group) execute(update);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void delete(String groupKey) throws IOException {
-		Delete delete = directory.groups().delete(groupKey);
-		execute(delete);
+	public void delete(String groupKey) {
+		try {
+			Delete delete = directory.groups().delete(groupKey);
+			execute(delete);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Group getGroup(String groupKey) throws IOException {
-		Get get = directory.groups().get(groupKey);
-		return (Group) execute(get);
+	public Group getGroup(String groupKey) {
+		try {
+			Get get = directory.groups().get(groupKey);
+			return (Group) execute(get);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Groups getGroups() throws IOException {
-		List list = directory.groups().list().setCustomer("my_customer");
-		return (Groups) execute(list);
+	public Groups getGroups() {
+		try {
+			List list = directory.groups().list().setCustomer("my_customer");
+			return (Groups) execute(list);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void addMemberGroup(Group group, Member member) throws IOException {
-		com.google.api.services.admin.directory.Directory.Members.Insert insert = directory.members().insert(group.getEmail(), member);
-		execute(insert);
+	public void addMemberGroup(Group group, Member member) {
+		try {
+			com.google.api.services.admin.directory.Directory.Members.Insert insert = directory.members().insert(group.getEmail(), member);
+			execute(insert);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void deleteMemberGroup(Group group, String membersEmail) throws IOException {
-		com.google.api.services.admin.directory.Directory.Members.Delete delete = directory.members()
-				.delete(group.getEmail(), membersEmail);
-		execute(delete);
+	public void deleteMemberGroup(Group group, String membersEmail) {
+		try {
+			com.google.api.services.admin.directory.Directory.Members.Delete delete = directory.members().delete(group.getEmail(),
+					membersEmail);
+			execute(delete);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Member getMemberGroup(Group group, String membersEmail) throws IOException {
-		com.google.api.services.admin.directory.Directory.Members.Get get = directory.members().get(group.getEmail(), membersEmail);
-		return (Member) execute(get);
+	public Member getMemberGroup(Group group, String membersEmail) {
+		try {
+			com.google.api.services.admin.directory.Directory.Members.Get get = directory.members().get(group.getEmail(), membersEmail);
+			return (Member) execute(get);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Members getMembersGroup(Group group) throws IOException {
-		com.google.api.services.admin.directory.Directory.Members.List list = directory.members().list(group.getEmail());
-		return (Members) execute(list);
+	public Members getMembersGroup(Group group) {
+		try {
+			com.google.api.services.admin.directory.Directory.Members.List list = directory.members().list(group.getEmail());
+			return (Members) execute(list);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("rawtypes")

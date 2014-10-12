@@ -43,7 +43,7 @@ public class GoogleAPI {
 		return spreadsheet.key(key);
 	}
 
-	public DirectoryAPI directory() throws GeneralSecurityException, IOException, URISyntaxException {
+	public DirectoryAPI directory()  {
 		if (group == null) {
 			group = new DirectoryAPI(directoryService());
 		}
@@ -51,16 +51,19 @@ public class GoogleAPI {
 	}
 
 	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
+		if (Setup.isAppEngineProduction()) {
+			return generateCredentialForGae(scopes);
+		}
 		return generateCredentialWithP12(scopes, userServiceAccountUser);
 	}
 
-	private GoogleCredential generateCredentialWithP12(List<String> scopes, boolean userServiceAccountUser) {
+	private GoogleCredential generateCredentialWithP12(List<String> scopes, boolean useServiceAccountUser) {
 		try {
 			Builder builder = new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
 					.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
 					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
 
-			if (userServiceAccountUser) {
+			if (useServiceAccountUser) {
 				builder.setServiceAccountUser(Setup.getServiceAccountUser());
 			}
 
@@ -75,10 +78,10 @@ public class GoogleAPI {
 		AppIdentityService appIdentityService = appIdentityCredential.getAppIdentityService();
 		GetAccessTokenResult accessTokenResult = appIdentityService.getAccessToken(scopes);
 
-		GoogleCredential cred = new GoogleCredential();
-		cred.setAccessToken(accessTokenResult.getAccessToken());
-		cred.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
-		return cred;
+		GoogleCredential credential = new GoogleCredential();
+		credential.setAccessToken(accessTokenResult.getAccessToken());
+		credential.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
+		return credential;
 	}
 
 	private SpreadsheetService spreadsheetService() {
@@ -93,7 +96,7 @@ public class GoogleAPI {
 		return new Drive.Builder(getTransport(), getJsonFactory(), credential).setApplicationName("gapi").build();
 	}
 
-	private Directory directoryService() throws GeneralSecurityException, IOException, URISyntaxException {
+	private Directory directoryService() {
 		Directory.Builder builder = new Directory.Builder(getTransport(), getJsonFactory(), createCredential(DirectoryAPI.SCOPES, true));
 		builder.setApplicationName("gapi");
 		return builder.build();
