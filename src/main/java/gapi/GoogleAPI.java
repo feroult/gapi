@@ -52,9 +52,9 @@ public class GoogleAPI {
 	}
 
 	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
-		if (Setup.isAppEngineProduction()) {
-			return generateCredentialForGae(scopes);
-		}
+//		if (Setup.isAppEngineProduction()) {
+//			return generateCredentialForGae(scopes);
+//		}
 		return generateCredentialWithP12(scopes, userServiceAccountUser);
 	}
 
@@ -82,6 +82,7 @@ public class GoogleAPI {
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(accessTokenResult.getAccessToken());
 		credential.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
+
 		return credential;
 	}
 
