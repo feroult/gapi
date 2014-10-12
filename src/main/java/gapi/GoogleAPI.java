@@ -3,7 +3,6 @@ package gapi;
 import gapi.utils.Setup;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -11,6 +10,8 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder;
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
+import com.google.api.client.googleapis.services.CommonGoogleClientRequestInitializer;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -43,7 +44,7 @@ public class GoogleAPI {
 		return spreadsheet.key(key);
 	}
 
-	public DirectoryAPI directory()  {
+	public DirectoryAPI directory() {
 		if (group == null) {
 			group = new DirectoryAPI(directoryService());
 		}
