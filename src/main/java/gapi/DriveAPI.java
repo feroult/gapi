@@ -1,8 +1,13 @@
 package gapi;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.api.services.drive.Drive;
 
 public class DriveAPI {
+
+	public static List<String> SCOPES = Arrays.asList("https://docs.google.com/feeds");
 
 	private Drive driveService;
 
@@ -20,15 +25,15 @@ public class DriveAPI {
 			file = driveService.files().insert(file).execute();
 
 			return file.getId();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void delete(String key)  {
+	public void delete(String key) {
 		try {
 			driveService.files().delete(key).execute();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
