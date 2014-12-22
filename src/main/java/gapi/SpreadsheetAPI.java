@@ -2,6 +2,7 @@ package gapi;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -32,14 +33,19 @@ public class SpreadsheetAPI {
 
 	private static final int MAX_BATCH_ROWS = 500;
 
+	private static final int MAX_ITERATION_LEVEL = 4;
+
 	private SpreadsheetService spreadsheetService;
 
 	private SpreadsheetEntry spreadsheet;
 
 	private WorksheetEntry worksheet;
 
+	private int iterationCounter;
+
 	public SpreadsheetAPI(SpreadsheetService spreadsheetService) {
 		this.spreadsheetService = spreadsheetService;
+		this.iterationCounter = 0;
 	}
 
 	public SpreadsheetAPI key(String key) {
@@ -69,11 +75,22 @@ public class SpreadsheetAPI {
 
 			CellEntry cellEntry = new CellEntry(i, j, value);
 			cellFeed.insert(cellEntry);
-
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			setValue(i, j, value);
+			iterationCounter = 0;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
+	private void recalling(SocketTimeoutException e) {
+		if (iterationCounter > MAX_ITERATION_LEVEL) {
+			iterationCounter = 0;
+			throw new RuntimeException("Max of " + MAX_ITERATION_LEVEL + " iterations exceeded, couldn't connect to Spreadsheets.", e);
+		}
+		iterationCounter++;
+    }
 
 	public String getValue(int i, int j) {
 		try {
@@ -87,8 +104,12 @@ public class SpreadsheetAPI {
 
 			CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
 			return cellFeed.getEntries().get(0).getCell().getValue();
-
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			String result = getValue(i, j);
+			iterationCounter = 0;
+			return result;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -102,7 +123,12 @@ public class SpreadsheetAPI {
 			}
 
 			return this;
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			SpreadsheetAPI result = worksheet(title);
+			iterationCounter = 0;
+			return result;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -111,7 +137,12 @@ public class SpreadsheetAPI {
 		try {
 			worksheet = getWorksheetByTitle(title);
 			return worksheet != null;
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			boolean result = hasWorksheet(title);
+			iterationCounter = 0;
+			return result;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -158,8 +189,11 @@ public class SpreadsheetAPI {
 
 				sentRows += batchRows;
 			}
-
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			batch(batch, options);
+			iterationCounter = 0;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -257,8 +291,12 @@ public class SpreadsheetAPI {
 			}
 
 			return records;
-
-		} catch (Exception e) {
+		} catch (SocketTimeoutException e) {
+			recalling(e);
+			List<Map<String, String>> result = asMap();
+			iterationCounter = 0;
+			return result;
+		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
