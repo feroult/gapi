@@ -41,10 +41,11 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	SpreadsheetAPIImpl(SpreadsheetService spreadsheetService) {
 		this.spreadsheetService = spreadsheetService;
+		this.spreadsheetService.setConnectTimeout(4 * 60 * 1000);
 	}
 
 	@Override
-    public SpreadsheetAPI key(String key) {
+	public SpreadsheetAPI key(String key) {
 		if (spreadsheet != null && spreadsheet.getKey().equals(key)) {
 			return this;
 		}
@@ -66,7 +67,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public void setValue(int i, int j, String value) {
+	public void setValue(int i, int j, String value) {
 		try {
 			CellFeed cellFeed = spreadsheetService.getFeed(worksheet.getCellFeedUrl(), CellFeed.class);
 
@@ -78,7 +79,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public String getValue(int i, int j) {
+	public String getValue(int i, int j) {
 		try {
 			CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
 
@@ -100,7 +101,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public SpreadsheetAPI worksheet(String title) {
+	public SpreadsheetAPI worksheet(String title) {
 		try {
 			worksheet = getWorksheetByTitle(title);
 
@@ -115,7 +116,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public boolean hasWorksheet(String title) {
+	public boolean hasWorksheet(String title) {
 		try {
 			worksheet = getWorksheetByTitle(title);
 			return worksheet != null;
@@ -149,7 +150,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public void batch(SpreadsheetBatch batch, BatchOptions... options) {
+	public void batch(SpreadsheetBatch batch, BatchOptions... options) {
 		try {
 			int batchRows = 0;
 			int sentRows = 0;
@@ -172,8 +173,8 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 	}
 
-	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException,
-	        BatchInterruptedException, MalformedURLException {
+	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException, BatchInterruptedException,
+	        MalformedURLException {
 		Link batchLink = cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
 
 		spreadsheetService.setHeader("If-Match", "*");
@@ -255,7 +256,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-    public List<Map<String, String>> asMap() {
+	public List<Map<String, String>> asMap() {
 		List<Map<String, String>> records = new ArrayList<Map<String, String>>();
 
 		try {
