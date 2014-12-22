@@ -1,4 +1,4 @@
-package gapi;
+package gapi.spredsheet;
 
 public interface SpreadsheetBatch {
 

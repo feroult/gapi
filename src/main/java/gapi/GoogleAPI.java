@@ -1,5 +1,6 @@
 package gapi;
 
+import gapi.spredsheet.SpreadsheetAPIFactory;
 import gapi.utils.Setup;
 
 import java.io.IOException;
@@ -10,8 +11,6 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder;
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
-import com.google.api.client.googleapis.services.CommonGoogleClientRequestInitializer;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -25,9 +24,7 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 public class GoogleAPI {
 
 	private DriveAPI drive;
-
 	private SpreadsheetAPI spreadsheet;
-
 	private DirectoryAPI group;
 
 	public DriveAPI drive() {
@@ -39,7 +36,7 @@ public class GoogleAPI {
 
 	public SpreadsheetAPI spreadsheet(String key) {
 		if (spreadsheet == null) {
-			spreadsheet = new SpreadsheetAPI(spreadsheetService());
+			spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService());
 		}
 		return spreadsheet.key(key);
 	}
@@ -52,17 +49,18 @@ public class GoogleAPI {
 	}
 
 	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
-//		if (Setup.isAppEngineProduction()) {
-//			return generateCredentialForGae(scopes);
-//		}
+		boolean isCredentialGenerationEnabled = false; // FIXME review this
+		if (isCredentialGenerationEnabled && Setup.isAppEngineProduction()) {
+			return generateCredentialForGae(scopes);
+		}
 		return generateCredentialWithP12(scopes, userServiceAccountUser);
 	}
 
 	private GoogleCredential generateCredentialWithP12(List<String> scopes, boolean useServiceAccountUser) {
 		try {
 			Builder builder = new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
-					.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
-					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
+			        .setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
+			        .setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
 
 			if (useServiceAccountUser) {
 				builder.setServiceAccountUser(Setup.getServiceAccountUser());

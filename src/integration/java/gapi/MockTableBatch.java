@@ -1,5 +1,7 @@
 package gapi;
 
+import gapi.spredsheet.SpreadsheetBatch;
+
 public class MockTableBatch implements SpreadsheetBatch {
 
 	private String[][] table;
