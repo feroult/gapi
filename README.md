@@ -3,7 +3,6 @@ Google API (gapi)
 
 Easy enough (for me) Google API
 
-
 Export variable environment
 ---------------------------
 
