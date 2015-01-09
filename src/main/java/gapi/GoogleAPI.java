@@ -22,6 +22,8 @@ import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenRes
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
 public class GoogleAPI {
+	
+	private static final String APPLICATION_NAME = "gapi";
 
 	private DriveAPI drive;
 	private SpreadsheetAPI spreadsheet;
@@ -85,7 +87,7 @@ public class GoogleAPI {
 	}
 
 	private SpreadsheetService spreadsheetService() {
-		SpreadsheetService service = new SpreadsheetService("gapi");
+		SpreadsheetService service = new SpreadsheetService(APPLICATION_NAME);
 		service.setOAuth2Credentials(createCredential(SpreadsheetAPI.SCOPES, false));
 		service.setConnectTimeout(120 * 1000);
 		return service;
@@ -98,7 +100,7 @@ public class GoogleAPI {
 
 	private Directory directoryService() {
 		Directory.Builder builder = new Directory.Builder(getTransport(), getJsonFactory(), createCredential(DirectoryAPI.SCOPES, true));
-		builder.setApplicationName("gapi");
+		builder.setApplicationName(APPLICATION_NAME);
 		return builder.build();
 	}
 

@@ -25,7 +25,8 @@ public class DirectoryAPITest {
 
 	private DirectoryAPI directory;
 
-	public DirectoryAPITest() throws GeneralSecurityException, IOException, URISyntaxException {
+	public DirectoryAPITest() throws GeneralSecurityException, IOException,
+			URISyntaxException {
 		directory = new GoogleAPI().directory();
 	}
 
@@ -77,7 +78,7 @@ public class DirectoryAPITest {
 	@Test
 	public void testGetGroups() throws IOException {
 		createGroup("group", EMAIL, "group 1");
-		Groups groups = directory.getGroups();
+		Groups groups = directory.getGroupsByCustomer("my_customer");
 		List<Group> results = groups.getGroups();
 		assertTrue(results.size() > 0);
 	}
@@ -134,12 +135,14 @@ public class DirectoryAPITest {
 		assertEquals("rsilvamagalhaes@gmail.com", ms.get(0).getEmail());
 	}
 
-	private Group createGroup(String name, String email, String description) throws IOException {
+	private Group createGroup(String name, String email, String description)
+			throws IOException {
 		Group group = createObjectGroup(name, email, description);
 		return directory.create(group);
 	}
 
-	private Group createObjectGroup(String name, String email, String description) {
+	private Group createObjectGroup(String name, String email,
+			String description) {
 		Group group = new Group();
 		group.setName(name);
 		group.setEmail(email);

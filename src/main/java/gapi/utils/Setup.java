@@ -38,12 +38,14 @@ public class Setup {
 	}
 
 	public static File getServiceAccountKeyFile() {
-		URL resource = Setup.class.getResource(getServiceAccountKey());
+		String key = getServiceAccountKey();
+		
+		URL resource = Setup.class.getResource(key);
 		if (resource != null) {
 			return new File(resource.getFile());
 		}
 
-		return new File(getServiceAccountKey());
+		return new File(key);
 	}
 
 	public static boolean isAppEngineProduction() {

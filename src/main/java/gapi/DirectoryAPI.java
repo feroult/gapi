@@ -21,7 +21,8 @@ import com.google.api.services.admin.directory.model.Members;
 
 public class DirectoryAPI {
 
-	public static java.util.List<String> SCOPES = Arrays.asList(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
+	public static java.util.List<String> SCOPES = Arrays
+			.asList(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 
 	private Directory directory;
 
@@ -68,9 +69,18 @@ public class DirectoryAPI {
 		}
 	}
 
-	public Groups getGroups() {
+	public Groups getGroupsByCustomer(String customer) {
 		try {
-			List list = directory.groups().list().setCustomer("my_customer");
+			List list = directory.groups().list().setCustomer(customer);
+			return (Groups) execute(list);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Groups getGroupsByDomain(String domain) {
+		try {
+			List list = directory.groups().list().setDomain(domain);
 			return (Groups) execute(list);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -79,7 +89,8 @@ public class DirectoryAPI {
 
 	public void addMemberGroup(Group group, Member member) {
 		try {
-			com.google.api.services.admin.directory.Directory.Members.Insert insert = directory.members().insert(group.getEmail(), member);
+			com.google.api.services.admin.directory.Directory.Members.Insert insert = directory
+					.members().insert(group.getEmail(), member);
 			execute(insert);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -88,8 +99,8 @@ public class DirectoryAPI {
 
 	public void deleteMemberGroup(Group group, String membersEmail) {
 		try {
-			com.google.api.services.admin.directory.Directory.Members.Delete delete = directory.members().delete(group.getEmail(),
-					membersEmail);
+			com.google.api.services.admin.directory.Directory.Members.Delete delete = directory
+					.members().delete(group.getEmail(), membersEmail);
 			execute(delete);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -98,7 +109,8 @@ public class DirectoryAPI {
 
 	public Member getMemberGroup(Group group, String membersEmail) {
 		try {
-			com.google.api.services.admin.directory.Directory.Members.Get get = directory.members().get(group.getEmail(), membersEmail);
+			com.google.api.services.admin.directory.Directory.Members.Get get = directory
+					.members().get(group.getEmail(), membersEmail);
 			return (Member) execute(get);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -107,7 +119,8 @@ public class DirectoryAPI {
 
 	public Members getMembersGroup(Group group) {
 		try {
-			com.google.api.services.admin.directory.Directory.Members.List list = directory.members().list(group.getEmail());
+			com.google.api.services.admin.directory.Directory.Members.List list = directory
+					.members().list(group.getEmail());
 			return (Members) execute(list);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -120,7 +133,8 @@ public class DirectoryAPI {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static Object execute(DirectoryRequest request, int interval) throws IOException {
+	private static Object execute(DirectoryRequest request, int interval)
+			throws IOException {
 		try {
 			return request.execute();
 		} catch (GoogleJsonResponseException ex) {
@@ -142,15 +156,18 @@ public class DirectoryAPI {
 		}
 	}
 
-	private static boolean handleGoogleJsonResponseException(GoogleJsonResponseException ex, int interval)
+	private static boolean handleGoogleJsonResponseException(
+			GoogleJsonResponseException ex, int interval)
 			throws GoogleJsonResponseException {
 		final GoogleJsonError e = ex.getDetails();
 		switch (e.getCode()) {
 		case 403:
 			String reason1 = e.getErrors().get(0).getReason();
-			if (reason1.equals("rateLimitExceeded") || reason1.equals("userRateLimitExceeded")) {
+			if (reason1.equals("rateLimitExceeded")
+					|| reason1.equals("userRateLimitExceeded")) {
 				try {
-					Thread.sleep((1 << interval) * 1000 + randomGenerator.nextInt(1001));
+					Thread.sleep((1 << interval) * 1000
+							+ randomGenerator.nextInt(1001));
 				} catch (InterruptedException ie) {
 				}
 			}
@@ -163,7 +180,8 @@ public class DirectoryAPI {
 			String reason2 = e.getErrors().get(0).getReason();
 			if (reason2.equals("backendError")) {
 				try {
-					Thread.sleep((1 << interval) * 1000 + randomGenerator.nextInt(1001));
+					Thread.sleep((1 << interval) * 1000
+							+ randomGenerator.nextInt(1001));
 				} catch (InterruptedException ie) {
 				}
 			}
