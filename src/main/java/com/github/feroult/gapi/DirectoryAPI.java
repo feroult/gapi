@@ -1,4 +1,4 @@
-package gapi;
+package com.github.feroult.gapi;
 
 import java.io.IOException;
 import java.util.Arrays;

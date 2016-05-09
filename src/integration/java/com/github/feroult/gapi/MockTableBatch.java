@@ -1,6 +1,6 @@
-package gapi;
+package com.github.feroult.gapi;
 
-import gapi.spredsheet.SpreadsheetBatch;
+import com.github.feroult.gapi.spreadsheet.SpreadsheetBatch;
 
 public class MockTableBatch implements SpreadsheetBatch {
 

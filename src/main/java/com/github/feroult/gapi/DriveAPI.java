@@ -1,4 +1,4 @@
-package gapi;
+package com.github.feroult.gapi;
 
 import java.util.Arrays;
 import java.util.List;

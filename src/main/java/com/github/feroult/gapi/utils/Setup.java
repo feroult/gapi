@@ -1,4 +1,4 @@
-package gapi.utils;
+package com.github.feroult.gapi.utils;
 
 import java.io.File;
 import java.net.URL;

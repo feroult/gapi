@@ -1,7 +1,4 @@
-package gapi.spredsheet;
-
-import gapi.BatchOptions;
-import gapi.SpreadsheetAPI;
+package com.github.feroult.gapi.spreadsheet;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.feroult.gapi.BatchOptions;
+import com.github.feroult.gapi.SpreadsheetAPI;
 import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.spreadsheet.CellQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;

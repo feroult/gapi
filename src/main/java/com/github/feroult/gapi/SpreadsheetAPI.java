@@ -1,10 +1,10 @@
-package gapi;
-
-import gapi.spredsheet.SpreadsheetBatch;
+package com.github.feroult.gapi;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import com.github.feroult.gapi.spreadsheet.SpreadsheetBatch;
 
 public interface SpreadsheetAPI {
 
