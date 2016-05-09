@@ -18,6 +18,21 @@
 		<downloadSources>true</downloadSources>
 	</properties>
 
+	<scm>
+		<connection>scm:git:ssh://git@github.com/feroult/gapi.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/feroult/gapi.git</developerConnection>
+		<url>https://github.com/feroult/gapi</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>dextra-public-release</id>
+			<name>Dextra Public Releases</name>
+			<url>https://dextranet.dextra.com.br/nexus/content/repositories/dextra-public-release/</url>
+		</repository>
+	</distributionManagement>
+
 	<!-- todo fix tests! -->
 	<profiles>
 		<profile>
