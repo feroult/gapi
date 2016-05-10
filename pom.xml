@@ -4,6 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>Gapi</name>
+	<description>Easy API for Google Services</description>
+	<url>https://github.com/feroult/gapi</url>
 
 	<groupId>com.github.feroult</groupId>
 	<artifactId>gapi</artifactId>
