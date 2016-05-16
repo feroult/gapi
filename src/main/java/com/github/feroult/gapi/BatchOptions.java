@@ -1,4 +1,4 @@
-package gapi;
+package com.github.feroult.gapi;
 
 public enum BatchOptions {
 

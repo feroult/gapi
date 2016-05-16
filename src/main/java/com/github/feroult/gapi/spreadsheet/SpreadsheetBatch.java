@@ -1,4 +1,4 @@
-package gapi.spredsheet;
+package com.github.feroult.gapi.spreadsheet;
 
 public interface SpreadsheetBatch {
 

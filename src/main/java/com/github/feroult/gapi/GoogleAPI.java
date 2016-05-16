@@ -1,12 +1,11 @@
-package gapi;
-
-import gapi.spredsheet.SpreadsheetAPIFactory;
-import gapi.utils.Setup;
+package com.github.feroult.gapi;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
+import com.github.feroult.gapi.spreadsheet.SpreadsheetAPIFactory;
+import com.github.feroult.gapi.utils.Setup;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder;
@@ -51,8 +50,7 @@ public class GoogleAPI {
 	}
 
 	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
-		boolean isCredentialGenerationEnabled = false; // FIXME review this
-		if (isCredentialGenerationEnabled && Setup.isAppEngineProduction()) {
+		if (Setup.isUsingAppengineCredentials()) {
 			return generateCredentialForGae(scopes);
 		}
 		return generateCredentialWithP12(scopes, userServiceAccountUser);

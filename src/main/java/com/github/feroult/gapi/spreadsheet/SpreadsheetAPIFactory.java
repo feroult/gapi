@@ -1,7 +1,6 @@
-package gapi.spredsheet;
+package com.github.feroult.gapi.spreadsheet;
 
-import gapi.SpreadsheetAPI;
-
+import com.github.feroult.gapi.SpreadsheetAPI;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
 public final class SpreadsheetAPIFactory {
