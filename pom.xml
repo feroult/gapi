@@ -13,12 +13,6 @@
 
 	<packaging>jar</packaging>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
-
 	<!-- Specify hard-coded project properties here -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,6 +33,14 @@
 		<url>https://github.com/feroult/gapi</url>
 		<tag>HEAD</tag>
 	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>dextra-public-release</id>
+			<name>Dextra Public Releases</name>
+			<url>https://dextranet.dextra.com.br/nexus/content/repositories/dextra-public-release/</url>
+		</repository>
+	</distributionManagement>
 
 	<developers>
 		<developer>
@@ -226,6 +228,11 @@
 				</executions>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+			</plugin>
 		</plugins>
 	</build>
 
