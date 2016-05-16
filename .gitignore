@@ -1,5 +1,7 @@
 tmp
 
+.idea
+*.iml
 *.class
 .project
 .classpath
@@ -11,4 +13,3 @@ test-output
 *.jar
 *.war
 *.ear
-
