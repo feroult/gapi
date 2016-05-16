@@ -50,8 +50,7 @@ public class GoogleAPI {
 	}
 
 	private Credential createCredential(List<String> scopes, boolean userServiceAccountUser) {
-		boolean isCredentialGenerationEnabled = false; // FIXME review this
-		if (isCredentialGenerationEnabled && Setup.isAppEngineProduction()) {
+		if (Setup.isUsingAppengineCredentials()) {
 			return generateCredentialForGae(scopes);
 		}
 		return generateCredentialWithP12(scopes, userServiceAccountUser);
