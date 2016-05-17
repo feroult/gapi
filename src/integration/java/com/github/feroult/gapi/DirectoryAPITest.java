@@ -1,24 +1,23 @@
 package com.github.feroult.gapi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.github.feroult.gapi.utils.Setup;
+import com.google.api.services.admin.directory.model.Group;
+import com.google.api.services.admin.directory.model.Groups;
+import com.google.api.services.admin.directory.model.Member;
+import com.google.api.services.admin.directory.model.Members;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
-import com.github.feroult.gapi.utils.Setup;
-import com.google.api.services.admin.directory.model.Group;
-import com.google.api.services.admin.directory.model.Groups;
-import com.google.api.services.admin.directory.model.Member;
-import com.google.api.services.admin.directory.model.Members;
-
+@Ignore
 public class DirectoryAPITest {
 
 	private static final String EMAIL = "group@6spot.com.br";

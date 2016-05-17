@@ -1,13 +1,15 @@
 package com.github.feroult.gapi;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class SpreadsheetAPITest {
 
 	private final String[][] peopleTable = new String[][] { { "id", "name", "age" }, { "1", "John", "10" }, { "2", "Anne", "15" } };
