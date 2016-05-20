@@ -9,7 +9,7 @@
 
 	<groupId>com.github.feroult</groupId>
 	<artifactId>gapi</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.2</version>
 
 	<packaging>jar</packaging>
 
@@ -37,7 +37,7 @@
 		<connection>scm:git:ssh://git@github.com/feroult/gapi.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/feroult/gapi.git</developerConnection>
 		<url>https://github.com/feroult/gapi</url>
-		<tag>HEAD</tag>
+		<tag>gapi-1.1.2</tag>
 	</scm>
 
 	<developers>
