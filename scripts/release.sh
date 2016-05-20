@@ -6,7 +6,7 @@ mvn versions:commit
 git commit -am "release $VERSION"
 
 if [[ ! $VERSION =~ .*SNAPSHOT.* ]]; then
-    git tag "yawp-$VERSION"
+    git tag "gapi-$VERSION"
     git push --tags
 fi
 
