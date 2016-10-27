@@ -13,3 +13,4 @@ test-output
 *.jar
 *.war
 *.ear
+*.iml
