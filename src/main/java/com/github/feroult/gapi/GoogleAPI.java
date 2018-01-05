@@ -14,6 +14,7 @@ import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.drive.Drive;
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenResult;
+import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class GoogleAPI {
 
 	private DriveAPI drive;
 	private SpreadsheetAPI spreadsheet;
+	private DocsAPI docs;
 	private DirectoryAPI group;
 
 	public DriveAPI drive() {
@@ -33,6 +35,13 @@ public class GoogleAPI {
 			drive = new DriveAPI(driveService());
 		}
 		return drive;
+	}
+
+	public DocsAPI doc(String key) {
+		if (docs == null) {
+			docs = new DocsAPI(docsService());
+		}
+		return docs.key(key);
 	}
 
 	public SpreadsheetAPI spreadsheet(String key) {
@@ -82,6 +91,13 @@ public class GoogleAPI {
 		credential.setExpirationTimeMilliseconds(accessTokenResult.getExpirationTime().getTime());
 
 		return credential;
+	}
+
+	private DocsService docsService() {
+		DocsService service = new DocsService(APPLICATION_NAME);
+		service.setOAuth2Credentials(createCredential(SpreadsheetAPI.SCOPES, false));
+		service.setConnectTimeout(120 * 1000);
+		return service;
 	}
 
 	private SpreadsheetService spreadsheetService() {
