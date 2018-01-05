@@ -24,8 +24,7 @@ public class DirectoryAPITest {
 
 	private DirectoryAPI directory;
 
-	public DirectoryAPITest() throws GeneralSecurityException, IOException,
-			URISyntaxException {
+	public DirectoryAPITest() throws GeneralSecurityException, IOException, URISyntaxException {
 		directory = new GoogleAPI().directory();
 	}
 
@@ -141,7 +140,7 @@ public class DirectoryAPITest {
 	}
 
 	private Group createObjectGroup(String name, String email,
-			String description) {
+									String description) {
 		Group group = new Group();
 		group.setName(name);
 		group.setEmail(email);

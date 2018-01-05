@@ -2,11 +2,11 @@ package com.github.feroult.gapi.spreadsheet;
 
 public interface SpreadsheetBatch {
 
-	public int rows();
+	int rows();
 
-	public int cols();
+	int cols();
 
 	// 1-based indexes
-	public String getValue(int row, int column);
+	String getValue(int row, int column);
 
 }

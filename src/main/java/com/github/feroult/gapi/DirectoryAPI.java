@@ -1,17 +1,9 @@
 package com.github.feroult.gapi;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
-
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.Directory.Groups.Delete;
-import com.google.api.services.admin.directory.Directory.Groups.Get;
-import com.google.api.services.admin.directory.Directory.Groups.Insert;
-import com.google.api.services.admin.directory.Directory.Groups.List;
-import com.google.api.services.admin.directory.Directory.Groups.Update;
+import com.google.api.services.admin.directory.Directory.Groups.*;
 import com.google.api.services.admin.directory.DirectoryRequest;
 import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.admin.directory.model.Group;
@@ -19,10 +11,13 @@ import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.Member;
 import com.google.api.services.admin.directory.model.Members;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
+
 public class DirectoryAPI {
 
-	public static java.util.List<String> SCOPES = Arrays
-			.asList(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
+	public static java.util.List<String> SCOPES = Arrays.asList(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 
 	private Directory directory;
 
@@ -127,14 +122,11 @@ public class DirectoryAPI {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private static Object execute(DirectoryRequest request) throws IOException {
 		return execute(request, 1);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private static Object execute(DirectoryRequest request, int interval)
-			throws IOException {
+	private static Object execute(DirectoryRequest request, int interval) throws IOException {
 		try {
 			return request.execute();
 		} catch (GoogleJsonResponseException ex) {
@@ -156,40 +148,40 @@ public class DirectoryAPI {
 		}
 	}
 
-	private static boolean handleGoogleJsonResponseException(
-			GoogleJsonResponseException ex, int interval)
-			throws GoogleJsonResponseException {
+	private static boolean handleGoogleJsonResponseException(GoogleJsonResponseException ex, int interval) throws GoogleJsonResponseException {
 		final GoogleJsonError e = ex.getDetails();
 		switch (e.getCode()) {
-		case 403:
-			String reason1 = e.getErrors().get(0).getReason();
-			if (reason1.equals("rateLimitExceeded")
-					|| reason1.equals("userRateLimitExceeded")) {
-				try {
-					Thread.sleep((1 << interval) * 1000
-							+ randomGenerator.nextInt(1001));
-				} catch (InterruptedException ie) {
+			case 403:
+				String reason1 = e.getErrors().get(0).getReason();
+				if (reason1.equals("rateLimitExceeded") || reason1.equals("userRateLimitExceeded")) {
+					randomSleep(interval);
 				}
-			}
-			break;
+				break;
 
-		case 404:
-			return true;
+			case 404:
+				return true;
 
-		case 503:
-			String reason2 = e.getErrors().get(0).getReason();
-			if (reason2.equals("backendError")) {
-				try {
-					Thread.sleep((1 << interval) * 1000
-							+ randomGenerator.nextInt(1001));
-				} catch (InterruptedException ie) {
+			case 503:
+				String reason2 = e.getErrors().get(0).getReason();
+				if (reason2.equals("backendError")) {
+					randomSleep(interval);
 				}
-			}
-			break;
+				break;
 
-		default:
-			throw ex;
+			default:
+				throw ex;
 		}
 		return false;
+	}
+
+	private static void randomSleep(int interval) {
+		sleep((1 << interval) * 1000 + randomGenerator.nextInt(1001));
+	}
+
+	private static void sleep(int millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException ignored) {
+		}
 	}
 }

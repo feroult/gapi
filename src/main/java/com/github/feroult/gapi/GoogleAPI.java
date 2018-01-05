@@ -1,9 +1,5 @@
 package com.github.feroult.gapi;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.List;
-
 import com.github.feroult.gapi.spreadsheet.SpreadsheetAPIFactory;
 import com.github.feroult.gapi.utils.Setup;
 import com.google.api.client.auth.oauth2.Credential;
@@ -20,8 +16,12 @@ import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenResult;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
+
 public class GoogleAPI {
-	
+
 	private static final String APPLICATION_NAME = "gapi";
 
 	private DriveAPI drive;
@@ -59,8 +59,8 @@ public class GoogleAPI {
 	private GoogleCredential generateCredentialWithP12(List<String> scopes, boolean useServiceAccountUser) {
 		try {
 			Builder builder = new GoogleCredential.Builder().setTransport(getTransport()).setJsonFactory(getJsonFactory())
-			        .setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
-			        .setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
+					.setServiceAccountId(Setup.getServiceAccountEmail()).setServiceAccountScopes(scopes)
+					.setServiceAccountPrivateKeyFromP12File(Setup.getServiceAccountKeyFile());
 
 			if (useServiceAccountUser) {
 				builder.setServiceAccountUser(Setup.getServiceAccountUser());

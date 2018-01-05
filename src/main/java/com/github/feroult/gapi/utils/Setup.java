@@ -1,9 +1,9 @@
 package com.github.feroult.gapi.utils;
 
+import com.google.appengine.api.utils.SystemProperty;
+
 import java.io.File;
 import java.net.URL;
-
-import com.google.appengine.api.utils.SystemProperty;
 
 public class Setup {
 
@@ -28,7 +28,7 @@ public class Setup {
 	private static String getServiceAccountKey() {
 		return getProperty(GAPI_SERVICE_ACCOUNT_KEY, GAPI_SERVICE_ACCOUNT_KEY_ENV);
 	}
-	
+
 	private static String getUseAppengineCredentials() {
 		return getProperty(GAPI_USE_APPENGINE_CREDENTIALS, GAPI_USE_APPENGINE_CREDENTIALS_ENV);
 	}
@@ -45,7 +45,7 @@ public class Setup {
 
 	public static File getServiceAccountKeyFile() {
 		String key = getServiceAccountKey();
-		
+
 		URL resource = Setup.class.getResource(key);
 		if (resource != null) {
 			return new File(resource.getFile());
@@ -65,7 +65,7 @@ public class Setup {
 	public static boolean isAppengine() {
 		return isAppEngineProduction() || isAppengineDevelopment();
 	}
-	
+
 	public static boolean isUsingAppengineCredentials() {
 		String use = getUseAppengineCredentials();
 		return isAppEngineProduction() && "true".equalsIgnoreCase(use);

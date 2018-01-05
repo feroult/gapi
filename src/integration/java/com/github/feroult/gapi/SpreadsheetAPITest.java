@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class SpreadsheetAPITest {
 
-	private final String[][] peopleTable = new String[][] { { "id", "name", "age" }, { "1", "John", "10" }, { "2", "Anne", "15" } };
+	private final String[][] peopleTable = new String[][]{{"id", "name", "age"}, {"1", "John", "10"}, {"2", "Anne", "15"}};
 
 	private GoogleAPI google;
 
@@ -41,8 +41,8 @@ public class SpreadsheetAPITest {
 	@Test
 	public void testSpreadsheetBatchShrinkOption() {
 
-		String[][] twoRowsTable = new String[][] { { "name", "age" }, { "john", "30" } };
-		String[][] threeRowsTable = new String[][] { { "name", "age" }, { "john", "30" }, { "anne", "40" } };
+		String[][] twoRowsTable = new String[][]{{"name", "age"}, {"john", "30"}};
+		String[][] threeRowsTable = new String[][]{{"name", "age"}, {"john", "30"}, {"anne", "40"}};
 
 		String key = google.drive().createSpreadsheet();
 

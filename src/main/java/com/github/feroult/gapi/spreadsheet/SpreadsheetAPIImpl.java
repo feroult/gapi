@@ -1,17 +1,7 @@
 package com.github.feroult.gapi.spreadsheet;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.github.feroult.gapi.BatchOptions;
 import com.github.feroult.gapi.SpreadsheetAPI;
-import com.google.gdata.client.batch.BatchInterruptedException;
 import com.google.gdata.client.spreadsheet.CellQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.client.spreadsheet.WorksheetQuery;
@@ -20,15 +10,17 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.batch.BatchOperationType;
 import com.google.gdata.data.batch.BatchStatus;
 import com.google.gdata.data.batch.BatchUtils;
-import com.google.gdata.data.spreadsheet.CellEntry;
-import com.google.gdata.data.spreadsheet.CellFeed;
-import com.google.gdata.data.spreadsheet.ListEntry;
-import com.google.gdata.data.spreadsheet.ListFeed;
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.data.spreadsheet.*;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
+
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
@@ -151,13 +143,12 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	@Override
 	public void batch(SpreadsheetBatch batch, BatchOptions... options) {
 		try {
-			int batchRows = 0;
 			int sentRows = 0;
 
 			adjustWorksheetDimensions(batch, options);
 
 			while (sentRows < batch.rows()) {
-				batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
+				int batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
 
 				CellFeed cellFeed = queryCellFeedForBatch(batch, sentRows, batchRows);
 				CellFeed batchRequest = createBatchRequest(cellFeed, batch, sentRows, batchRows);
@@ -172,8 +163,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 	}
 
-	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException, BatchInterruptedException,
-	        MalformedURLException {
+	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException {
 		Link batchLink = cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM);
 
 		spreadsheetService.setHeader("If-Match", "*");
@@ -216,8 +206,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		query.setMaximumCol(batch.cols());
 
 		query.setReturnEmpty(true);
-		CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
-		return cellFeed;
+		return spreadsheetService.getFeed(query, CellFeed.class);
 	}
 
 	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions... options) throws IOException, ServiceException {
@@ -256,7 +245,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public List<Map<String, String>> asMap() {
-		List<Map<String, String>> records = new ArrayList<Map<String, String>>();
+		List<Map<String, String>> records = new ArrayList<>();
 
 		try {
 			ListFeed feed = spreadsheetService.getFeed(worksheet.getListFeedUrl(), ListFeed.class);
@@ -272,7 +261,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	private Map<String, String> loadRecord(ListEntry row) {
-		Map<String, String> record = new HashMap<String, String>();
+		Map<String, String> record = new HashMap<>();
 		for (String tag : row.getCustomElements().getTags()) {
 			record.put(tag, row.getCustomElements().getValue(tag));
 		}
