@@ -2,6 +2,8 @@ package com.github.feroult.gapi.spreadsheet;
 
 import com.github.feroult.gapi.BatchOptions;
 import com.github.feroult.gapi.SpreadsheetAPI;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.*;
 import com.google.gdata.client.spreadsheet.CellQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.client.spreadsheet.WorksheetQuery;
@@ -15,12 +17,11 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
+import java.io.ObjectStreamClass;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
@@ -29,10 +30,14 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	private SpreadsheetService spreadsheetService;
 	private SpreadsheetEntry spreadsheet;
 	private WorksheetEntry worksheet;
+	private Sheets sheetsService;
+	private String spreadsheetId;
+	private Sheet worksheetName;
 
-	SpreadsheetAPIImpl(SpreadsheetService spreadsheetService) {
+	SpreadsheetAPIImpl(SpreadsheetService spreadsheetService, Sheets sheetsService) {
 		this.spreadsheetService = spreadsheetService;
 		this.spreadsheetService.setConnectTimeout(4 * 60 * 1000);
+		this.sheetsService = sheetsService;
 	}
 
 	@Override
@@ -50,54 +55,111 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		} catch (IOException | ServiceException e) {
 			throw new RuntimeException(e);
 		}
+
+		spreadsheetId = key;
 		return this;
 	}
 
 	private void resetWorksheet() {
-		worksheet = null;
+//		worksheet = null;
+		worksheetName = null;
 	}
+
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
 
 	@Override
 	public void setValue(int i, int j, String value) {
-		try {
-			CellFeed cellFeed = spreadsheetService.getFeed(worksheet.getCellFeedUrl(), CellFeed.class);
+//		try {
+//			CellFeed cellFeed = spreadsheetService.getFeed(worksheet.getCellFeedUrl(), CellFeed.class);
+//
+//			CellEntry cellEntry = new CellEntry(i, j, value);
+//			cellFeed.insert(cellEntry);
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
 
-			CellEntry cellEntry = new CellEntry(i, j, value);
-			cellFeed.insert(cellEntry);
-		} catch (ServiceException | IOException e) {
+		List<List<Object>> values = Arrays.asList(
+				Arrays.asList((Object)value)
+		);
+
+		ValueRange body = new ValueRange()
+				.setValues(values);
+
+		String range = worksheetName.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+
+		try {
+			UpdateValuesResponse result = sheetsService.spreadsheets().values()
+					.update(spreadsheetId, range, body)
+					.setValueInputOption("USER_ENTERED")
+					.setIncludeValuesInResponse(true)
+					.execute();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
 	public String getValue(int i, int j) {
+//		try {
+//			CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
+//
+//			query.setMinimumRow(i);
+//			query.setMaximumRow(i);
+//			query.setMinimumCol(j);
+//			query.setMaximumCol(j);
+//			query.setMaxResults(1);
+//
+//			CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
+//			List<CellEntry> entries = cellFeed.getEntries();
+//			if (entries.isEmpty()) {
+//				return null;
+//			}
+//			return entries.get(0).getCell().getValue();
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
+		String range = worksheetName.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+
+		ValueRange response = null;
 		try {
-			CellQuery query = new CellQuery(worksheet.getCellFeedUrl());
-
-			query.setMinimumRow(i);
-			query.setMaximumRow(i);
-			query.setMinimumCol(j);
-			query.setMaximumCol(j);
-			query.setMaxResults(1);
-
-			CellFeed cellFeed = spreadsheetService.getFeed(query, CellFeed.class);
-			List<CellEntry> entries = cellFeed.getEntries();
-			if (entries.isEmpty()) {
-				return null;
-			}
-			return entries.get(0).getCell().getValue();
-		} catch (ServiceException | IOException e) {
+			response = sheetsService.spreadsheets().values()
+					.get(spreadsheetId, range)
+					.execute();
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		List<List<Object>> values = response.getValues();
+		return values.get(0).get(0).toString();
 	}
 
 	@Override
 	public SpreadsheetAPI worksheet(String title) {
+//		try {
+//			worksheet = getWorksheetByTitle(title);
+//
+//			if (worksheet == null) {
+//				worksheet = createWorksheet(title);
+//			}
+//
+//			return this;
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
+
 		try {
 			worksheet = getWorksheetByTitle(title);
+			worksheetName = lucasGetWorksheetByTitle(title);
 
 			if (worksheet == null) {
 				worksheet = createWorksheet(title);
+			}
+
+			if (worksheetName == null) {
+				// TODO: Fazer o método createWorkSheet retornar uma workSheet
+				lucasCreateWorksheet(title);
+				worksheetName = lucasGetWorksheetByTitle(title);
 			}
 
 			return this;
@@ -108,15 +170,27 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public boolean hasWorksheet(String title) {
+//		try {
+//			worksheet = getWorksheetByTitle(title);
+//			return worksheet != null;
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
+
 		try {
-			worksheet = getWorksheetByTitle(title);
-			return worksheet != null;
-		} catch (ServiceException | IOException e) {
+			Sheets.Spreadsheets.Get request = sheetsService.spreadsheets().get(spreadsheetId);
+			Spreadsheet response = request.execute();
+			List<Sheet> filteredSheets = response.getSheets().stream()
+					.filter(sheet -> sheet.getProperties().getTitle().equals(title)).collect(Collectors.toList());
+			return filteredSheets.size() == 1;
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	// TODO: remover esse método quando não usar mais worksheet
 	private WorksheetEntry createWorksheet(String title) throws IOException, ServiceException {
+
 		WorksheetEntry worksheet = new WorksheetEntry();
 		worksheet.setTitle(new PlainTextConstruct(title));
 		worksheet.setColCount(10);
@@ -124,6 +198,27 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		return spreadsheetService.insert(spreadsheet.getWorksheetFeedUrl(), worksheet);
 	}
 
+
+	private void lucasCreateWorksheet(String title) throws IOException {
+		AddSheetRequest addSheetRequest = new AddSheetRequest()
+			.setProperties(
+				new SheetProperties()
+					.setTitle(title)
+					.setGridProperties(
+						new GridProperties()
+							.setColumnCount(10)
+							.setRowCount(10)
+					)
+			);
+
+		List<Request> requests = new ArrayList<>();
+		requests.add(new Request().setAddSheet(addSheetRequest));
+
+		BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		sheetsService.spreadsheets().batchUpdate(spreadsheetId, body).execute();
+	}
+
+	// TODO: remover esse método quando não usar mais worksheet
 	private WorksheetEntry getWorksheetByTitle(String title) throws IOException, ServiceException {
 		WorksheetQuery query = new WorksheetQuery(spreadsheet.getWorksheetFeedUrl());
 
@@ -138,6 +233,15 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 
 		return worksheets.get(0);
+	}
+
+	// TODO: corrigir esse método
+	private Sheet lucasGetWorksheetByTitle(String title) throws IOException {
+		Sheets.Spreadsheets.Get request = sheetsService.spreadsheets().get(spreadsheetId);
+		Spreadsheet response = request.execute();
+		List<Sheet> filteredSheets = response.getSheets().stream()
+				.filter(sheet -> sheet.getProperties().getTitle().equals(title)).collect(Collectors.toList());
+		return filteredSheets.get(0);
 	}
 
 	@Override
