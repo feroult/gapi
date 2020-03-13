@@ -17,7 +17,6 @@ import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
-import java.io.ObjectStreamClass;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
@@ -30,43 +29,55 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	private SpreadsheetService spreadsheetService;
 	private SpreadsheetEntry spreadsheet;
 	private WorksheetEntry worksheet;
-	private Sheets sheetsService;
-	private String spreadsheetId;
-	private Sheet worksheetName;
+	private Sheets sheetsServiceV4;
+	private Spreadsheet spreadsheetV4;
+	private Sheet worksheetV4;
+
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
 
 	SpreadsheetAPIImpl(SpreadsheetService spreadsheetService, Sheets sheetsService) {
 		this.spreadsheetService = spreadsheetService;
 		this.spreadsheetService.setConnectTimeout(4 * 60 * 1000);
-		this.sheetsService = sheetsService;
+		this.sheetsServiceV4 = sheetsService;
 	}
 
 	@Override
 	public SpreadsheetAPI key(String key) {
-		if (spreadsheet != null && spreadsheet.getKey().equals(key)) {
+		if (spreadsheetV4 != null && spreadsheetV4.getSpreadsheetId().equals(key)) {
 			return this;
 		}
 
 		try {
 			String spreadsheetURL = "https://spreadsheets.google.com/feeds/spreadsheets/" + key;
 			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);
+			spreadsheetV4 = sheetsServiceV4.spreadsheets().get(key).execute();
 			resetWorksheet();
-		} catch (ResourceNotFoundException e) {
-			return null;
 		} catch (IOException | ServiceException e) {
 			throw new RuntimeException(e);
 		}
 
-		spreadsheetId = key;
 		return this;
+
+//		if (spreadsheet != null && spreadsheet.getKey().equals(key)) {
+//			return this;
+//		}
+//
+//		try {
+//			String spreadsheetURL = "https://spreadsheets.google.com/feeds/spreadsheets/" + key;
+//			spreadsheet = spreadsheetService.getEntry(new URL(spreadsheetURL), SpreadsheetEntry.class);
+//			resetWorksheet();
+//		} catch (ResourceNotFoundException e) {
+//			return null;
+//		} catch (IOException | ServiceException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 	private void resetWorksheet() {
-//		worksheet = null;
-		worksheetName = null;
+		worksheet = null;
+		worksheetV4 = null;
 	}
-
-	public static final String ANSI_RESET = "\u001B[0m";
-	public static final String ANSI_YELLOW = "\u001B[33m";
 
 	@Override
 	public void setValue(int i, int j, String value) {
@@ -80,17 +91,17 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 //		}
 
 		List<List<Object>> values = Arrays.asList(
-				Arrays.asList((Object)value)
+				Arrays.asList(value)
 		);
 
 		ValueRange body = new ValueRange()
 				.setValues(values);
 
-		String range = worksheetName.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+		String range = worksheetV4.getProperties().getTitle() + "!" + (char)(64 + j) + i;
 
 		try {
-			UpdateValuesResponse result = sheetsService.spreadsheets().values()
-					.update(spreadsheetId, range, body)
+			UpdateValuesResponse result = sheetsServiceV4.spreadsheets().values()
+					.update(spreadsheetV4.getSpreadsheetId(), range, body)
 					.setValueInputOption("USER_ENTERED")
 					.setIncludeValuesInResponse(true)
 					.execute();
@@ -119,12 +130,12 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 //		} catch (ServiceException | IOException e) {
 //			throw new RuntimeException(e);
 //		}
-		String range = worksheetName.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+		String range = worksheetV4.getProperties().getTitle() + "!" + (char)(64 + j) + i;
 
-		ValueRange response = null;
+		ValueRange response;
 		try {
-			response = sheetsService.spreadsheets().values()
-					.get(spreadsheetId, range)
+			response = sheetsServiceV4.spreadsheets().values()
+					.get(spreadsheetV4.getSpreadsheetId(), range)
 					.execute();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -136,61 +147,66 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public SpreadsheetAPI worksheet(String title) {
-//		try {
-//			worksheet = getWorksheetByTitle(title);
-//
-//			if (worksheet == null) {
-//				worksheet = createWorksheet(title);
-//			}
-//
-//			return this;
-//		} catch (ServiceException | IOException e) {
-//			throw new RuntimeException(e);
-//		}
-
 		try {
 			worksheet = getWorksheetByTitle(title);
-			worksheetName = lucasGetWorksheetByTitle(title);
+			worksheetV4 = getWorksheetByTitleV4(title);
 
-			if (worksheet == null) {
-				worksheet = createWorksheet(title);
-			}
+			// TODO: Fazer o método createWorkSheet retornar uma workSheet
+			if (worksheetV4 == null) {
+				createWorksheetV4(title);
 
-			if (worksheetName == null) {
-				// TODO: Fazer o método createWorkSheet retornar uma workSheet
-				lucasCreateWorksheet(title);
-				worksheetName = lucasGetWorksheetByTitle(title);
+				worksheetV4 = getWorksheetByTitleV4(title);
+				worksheet = getWorksheetByTitle(title);
 			}
 
 			return this;
 		} catch (ServiceException | IOException e) {
 			throw new RuntimeException(e);
 		}
+
+//		try {
+//			worksheet = getWorksheetByTitle(title);
+//			worksheetName = lucasGetWorksheetByTitle(title);
+//
+//			if (worksheet == null) {
+//				worksheet = createWorksheet(title);
+//			}
+//
+//			if (worksheetName == null) {
+//				// TODO: Fazer o método createWorkSheet retornar uma workSheet
+//				lucasCreateWorksheet(title);
+//				worksheetName = lucasGetWorksheetByTitle(title);
+//			}
+//
+//			return this;
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 	@Override
 	public boolean hasWorksheet(String title) {
+		try {
+			worksheet = getWorksheetByTitle(title);
+			worksheetV4 = getWorksheetByTitleV4(title);
+
+			return worksheetV4 != null;
+		} catch (ServiceException | IOException e) {
+			throw new RuntimeException(e);
+		}
+
 //		try {
 //			worksheet = getWorksheetByTitle(title);
-//			return worksheet != null;
+//			worksheetName = lucasGetWorksheetByTitle(title);
+//
+//			return worksheetName != null;
 //		} catch (ServiceException | IOException e) {
 //			throw new RuntimeException(e);
 //		}
-
-		try {
-			Sheets.Spreadsheets.Get request = sheetsService.spreadsheets().get(spreadsheetId);
-			Spreadsheet response = request.execute();
-			List<Sheet> filteredSheets = response.getSheets().stream()
-					.filter(sheet -> sheet.getProperties().getTitle().equals(title)).collect(Collectors.toList());
-			return filteredSheets.size() == 1;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	// TODO: remover esse método quando não usar mais worksheet
 	private WorksheetEntry createWorksheet(String title) throws IOException, ServiceException {
-
 		WorksheetEntry worksheet = new WorksheetEntry();
 		worksheet.setTitle(new PlainTextConstruct(title));
 		worksheet.setColCount(10);
@@ -199,7 +215,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 
-	private void lucasCreateWorksheet(String title) throws IOException {
+	private void createWorksheetV4(String title) throws IOException {
 		AddSheetRequest addSheetRequest = new AddSheetRequest()
 			.setProperties(
 				new SheetProperties()
@@ -215,7 +231,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		requests.add(new Request().setAddSheet(addSheetRequest));
 
 		BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
-		sheetsService.spreadsheets().batchUpdate(spreadsheetId, body).execute();
+		sheetsServiceV4.spreadsheets().batchUpdate(spreadsheetV4.getSpreadsheetId(), body).execute();
 	}
 
 	// TODO: remover esse método quando não usar mais worksheet
@@ -236,11 +252,15 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	// TODO: corrigir esse método
-	private Sheet lucasGetWorksheetByTitle(String title) throws IOException {
-		Sheets.Spreadsheets.Get request = sheetsService.spreadsheets().get(spreadsheetId);
+	private Sheet getWorksheetByTitleV4(String title) throws IOException {
+		Sheets.Spreadsheets.Get request = sheetsServiceV4.spreadsheets().get(spreadsheetV4.getSpreadsheetId());
 		Spreadsheet response = request.execute();
 		List<Sheet> filteredSheets = response.getSheets().stream()
 				.filter(sheet -> sheet.getProperties().getTitle().equals(title)).collect(Collectors.toList());
+
+		if (filteredSheets.isEmpty()) {
+			return  null;
+		}
 		return filteredSheets.get(0);
 	}
 
