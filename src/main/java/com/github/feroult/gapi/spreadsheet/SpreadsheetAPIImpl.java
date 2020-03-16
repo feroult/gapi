@@ -266,25 +266,53 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public void batch(SpreadsheetBatch batch, BatchOptions... options) {
-		try {
-			int sentRows = 0;
+//		try {
+//			int sentRows = 0;
+//
+//			adjustWorksheetDimensions(batch, options);
+//
+//			while (sentRows < batch.rows()) {
+//				int batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
+//
+//				CellFeed cellFeed = queryCellFeedForBatch(batch, sentRows, batchRows);
+//				CellFeed batchRequest = createBatchRequest(cellFeed, batch, sentRows, batchRows);
+//				CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
+//
+//				checkBatchResponse(batchResponse);
+//
+//				sentRows += batchRows;
+//			}
+//		} catch (ServiceException | IOException e) {
+//			throw new RuntimeException(e);
+//		}
 
+		try {
 			adjustWorksheetDimensions(batch, options);
 
-			while (sentRows < batch.rows()) {
-				int batchRows = (sentRows + MAX_BATCH_ROWS > batch.rows()) ? batch.rows() - sentRows : MAX_BATCH_ROWS;
+			ValueRange body = new ValueRange()
+					.setValues(batchToList(batch));
 
-				CellFeed cellFeed = queryCellFeedForBatch(batch, sentRows, batchRows);
-				CellFeed batchRequest = createBatchRequest(cellFeed, batch, sentRows, batchRows);
-				CellFeed batchResponse = executeBatchRequest(cellFeed, batchRequest);
-
-				checkBatchResponse(batchResponse);
-
-				sentRows += batchRows;
-			}
-		} catch (ServiceException | IOException e) {
-			throw new RuntimeException(e);
+			UpdateValuesResponse result = sheetsServiceV4.spreadsheets().values()
+					.update(spreadsheetV4.getSpreadsheetId(), worksheetV4.getProperties().getTitle(), body)
+					.setValueInputOption("RAW")
+					.execute();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	}
+
+	private List<List<Object>> batchToList(SpreadsheetBatch batch) {
+		List<List<Object>> ret = new ArrayList<>();
+
+		for (int i = 1; i <= batch.rows(); i++) {
+			List<Object> row = new ArrayList<>();
+			for (int j = 1; j <= batch.cols(); j++) {
+				row.add(batch.getValue(i, j));
+			}
+			ret.add(row);
+		}
+
+		return ret;
 	}
 
 	private CellFeed executeBatchRequest(CellFeed cellFeed, CellFeed batchRequest) throws IOException, ServiceException {
