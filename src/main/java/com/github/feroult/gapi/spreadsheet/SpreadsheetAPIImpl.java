@@ -333,28 +333,68 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		return spreadsheetService.getFeed(query, CellFeed.class);
 	}
 
-	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions... options) throws IOException, ServiceException {
-		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
+	private void adjustWorksheetDimensions(SpreadsheetBatch updateSet, BatchOptions... options) throws IOException {
+//		if (worksheet.getColCount() == updateSet.cols() && worksheet.getRowCount() == updateSet.rows()) {
+//			return;
+//		}
+
+//		if (worksheet.getColCount() < updateSet.cols()) {
+//			worksheet.setColCount(updateSet.cols());
+//		}
+
+//		if (worksheet.getColCount() > updateSet.cols() && BatchOptions.SHRINK.on(options)) {
+//			worksheet.setColCount(updateSet.cols());
+//		}
+
+//		if (worksheet.getRowCount() < updateSet.rows()) {
+//			worksheet.setRowCount(updateSet.rows());
+//		}
+
+//		if (worksheet.getRowCount() > updateSet.rows() && BatchOptions.SHRINK.on(options)) {
+//			worksheet.setRowCount(updateSet.rows());
+//		}
+
+//		worksheet.update();
+
+		int rowCount = worksheetV4.getProperties().getGridProperties().getRowCount();
+		int columnCount = worksheetV4.getProperties().getGridProperties().getColumnCount();
+
+		if (columnCount == updateSet.cols() && rowCount == updateSet.rows()) {
 			return;
 		}
 
-		if (worksheet.getColCount() < updateSet.cols()) {
-			worksheet.setColCount(updateSet.cols());
+		if (columnCount < updateSet.cols()) {
+			columnCount = updateSet.cols();
 		}
 
-		if (worksheet.getColCount() > updateSet.cols() && BatchOptions.SHRINK.on(options)) {
-			worksheet.setColCount(updateSet.cols());
+		if (columnCount > updateSet.cols() && BatchOptions.SHRINK.on(options)) {
+			columnCount = updateSet.cols();
 		}
 
-		if (worksheet.getRowCount() < updateSet.rows()) {
-			worksheet.setRowCount(updateSet.rows());
+		if (rowCount < updateSet.rows()) {
+			rowCount = updateSet.rows();
 		}
 
-		if (worksheet.getRowCount() > updateSet.rows() && BatchOptions.SHRINK.on(options)) {
-			worksheet.setRowCount(updateSet.rows());
+		if (rowCount > updateSet.rows() && BatchOptions.SHRINK.on(options)) {
+			rowCount = updateSet.rows();
 		}
 
-		worksheet.update();
+		UpdateSheetPropertiesRequest updateSheetPropertiesRequest = new UpdateSheetPropertiesRequest()
+			.setFields("*")
+			.setProperties(new SheetProperties()
+				.setTitle(worksheetV4.getProperties().getTitle())
+				.setSheetId(worksheetV4.getProperties().getSheetId())
+				.setGridProperties(new GridProperties()
+					.setRowCount(rowCount)
+					.setColumnCount(columnCount)
+				)
+			);
+
+		List<Request> requests = new ArrayList<>();
+		requests.add(new Request().setUpdateSheetProperties(updateSheetPropertiesRequest));
+
+		BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
+		sheetsServiceV4.spreadsheets().batchUpdate(spreadsheetV4.getSpreadsheetId(), body).execute();
 	}
 
 	private void checkBatchResponse(CellFeed batchResponse) {
