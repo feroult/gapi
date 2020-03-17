@@ -10,7 +10,7 @@ public final class SpreadsheetAPIFactory {
 		throw new RuntimeException("Should not be instanciated");
 	}
 
-	public static SpreadsheetAPI create(SpreadsheetService spreadsheetService, Sheets sheetsService) {
-		return new SpreadsheetAPIImpl(spreadsheetService, sheetsService);
+	public static SpreadsheetAPI create(Sheets sheetsService) {
+		return new SpreadsheetAPIImpl(sheetsService);
 	}
 }

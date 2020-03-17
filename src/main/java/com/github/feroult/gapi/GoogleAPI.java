@@ -17,7 +17,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenResult;
 import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class GoogleAPI {
 	public SpreadsheetAPI spreadsheet(String key) {
 		if (spreadsheet == null) {
 			try {
-				spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService(), getSheetsService());
+				spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService());
 			} catch (GeneralSecurityException | IOException e) {
 				e.printStackTrace();
 			}
@@ -107,14 +106,7 @@ public class GoogleAPI {
 		return service;
 	}
 
-	private SpreadsheetService spreadsheetService() {
-		SpreadsheetService service = new SpreadsheetService(APPLICATION_NAME);
-		service.setOAuth2Credentials(createCredential(SpreadsheetAPI.SCOPES, false));
-		service.setConnectTimeout(120 * 1000);
-		return service;
-	}
-
-	private Sheets getSheetsService() throws GeneralSecurityException, IOException {
+	private Sheets spreadsheetService() throws GeneralSecurityException, IOException {
 		Credential credential = createCredential(SpreadsheetAPI.SCOPES, false);
 		return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(),
 				JacksonFactory.getDefaultInstance(), credential)
