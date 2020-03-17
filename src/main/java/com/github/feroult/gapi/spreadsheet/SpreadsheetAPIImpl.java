@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
-	private static final int MAX_BATCH_ROWS = 500;
+//	private static final int MAX_BATCH_ROWS = 500;
 
 	private Sheets sheetsService;
 	private Spreadsheet spreadsheet;
@@ -44,17 +44,16 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public void setValue(int i, int j, String value) {
-		List<List<Object>> values = Arrays.asList(
-				Arrays.asList(value)
+		List<List<Object>> values = Collections.singletonList(
+				Collections.singletonList(value)
 		);
 
-		ValueRange body = new ValueRange()
-				.setValues(values);
+		ValueRange body = new ValueRange().setValues(values);
 
 		String range = worksheet.getProperties().getTitle() + "!" + (char)(64 + j) + i;
 
 		try {
-			UpdateValuesResponse result = sheetsService.spreadsheets().values()
+			sheetsService.spreadsheets().values()
 					.update(spreadsheet.getSpreadsheetId(), range, body)
 					.setValueInputOption("USER_ENTERED")
 					.setIncludeValuesInResponse(true)
@@ -84,13 +83,10 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	@Override
 	public SpreadsheetAPI worksheet(String title) {
 		try {
-			worksheet = getWorksheetByTitleV4(title);
+			worksheet = getWorksheetByTitle(title);
 
-			// TODO: Fazer o método createWorksheet retornar uma worksheet
 			if (worksheet == null) {
-				createWorksheetV4(title);
-
-				worksheet = getWorksheetByTitleV4(title);
+				worksheet = createWorksheet(title);
 			}
 
 			return this;
@@ -102,7 +98,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	@Override
 	public boolean hasWorksheet(String title) {
 		try {
-			worksheet = getWorksheetByTitleV4(title);
+			worksheet = getWorksheetByTitle(title);
 
 			return worksheet != null;
 		} catch (IOException e) {
@@ -111,7 +107,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 
-	private void createWorksheetV4(String title) throws IOException {
+	private Sheet createWorksheet(String title) throws IOException {
 		AddSheetRequest addSheetRequest = new AddSheetRequest()
 			.setProperties(
 				new SheetProperties()
@@ -128,9 +124,10 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 		BatchUpdateSpreadsheetRequest body = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 		sheetsService.spreadsheets().batchUpdate(spreadsheet.getSpreadsheetId(), body).execute();
+		return getWorksheetByTitle(title);
 	}
 
-	private Sheet getWorksheetByTitleV4(String title) throws IOException {
+	private Sheet getWorksheetByTitle(String title) throws IOException {
 		Sheets.Spreadsheets.Get request = sheetsService.spreadsheets().get(spreadsheet.getSpreadsheetId());
 		Spreadsheet response = request.execute();
 		List<Sheet> filteredSheets = response.getSheets().stream()
@@ -150,7 +147,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 			ValueRange body = new ValueRange()
 					.setValues(batchToList(batch));
 
-			UpdateValuesResponse result = sheetsService.spreadsheets().values()
+			sheetsService.spreadsheets().values()
 					.update(spreadsheet.getSpreadsheetId(), worksheet.getProperties().getTitle(), body)
 					.setValueInputOption("RAW")
 					.execute();
