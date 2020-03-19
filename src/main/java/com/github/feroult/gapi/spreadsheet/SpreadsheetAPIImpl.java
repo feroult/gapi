@@ -138,7 +138,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 				.filter(sheet -> sheet.getProperties().getTitle().equals(title)).collect(Collectors.toList());
 
 		if (filteredSheets.isEmpty()) {
-			return  null;
+			return null;
 		}
 		return filteredSheets.get(0);
 	}
