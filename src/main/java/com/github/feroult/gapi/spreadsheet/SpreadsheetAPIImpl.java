@@ -156,7 +156,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 					.setValueInputOption("RAW")
 					.execute();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
