@@ -51,7 +51,7 @@ public class GoogleAPI {
 			try {
 				spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService());
 			} catch (GeneralSecurityException | IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		return spreadsheet.key(key);
