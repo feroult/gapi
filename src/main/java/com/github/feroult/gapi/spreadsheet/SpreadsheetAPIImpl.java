@@ -50,7 +50,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 		ValueRange body = new ValueRange().setValues(values);
 
-		String range = worksheet.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+		String range = getRange(i, j);
 
 		try {
 			sheetsService.spreadsheets().values()
@@ -65,7 +65,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public String getValue(int i, int j) {
-		String range = worksheet.getProperties().getTitle() + "!" + (char)(64 + j) + i;
+		String range = getRange(i, j);
 
 		ValueRange response;
 		try {
@@ -78,6 +78,10 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 		List<List<Object>> values = response.getValues();
 		return values.get(0).get(0).toString();
+	}
+
+	private String getRange(int row, int col) {
+		return worksheet.getProperties().getTitle() + "!" + (char)(64 + col) + row;
 	}
 
 	@Override
