@@ -6,16 +6,18 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential.Builder;
 import com.google.api.client.googleapis.extensions.appengine.auth.oauth2.AppIdentityCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.sheets.v4.Sheets;
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityService.GetAccessTokenResult;
 import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -46,7 +48,11 @@ public class GoogleAPI {
 
 	public SpreadsheetAPI spreadsheet(String key) {
 		if (spreadsheet == null) {
-			spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService());
+			try {
+				spreadsheet = SpreadsheetAPIFactory.create(spreadsheetService());
+			} catch (GeneralSecurityException | IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return spreadsheet.key(key);
 	}
@@ -100,11 +106,12 @@ public class GoogleAPI {
 		return service;
 	}
 
-	private SpreadsheetService spreadsheetService() {
-		SpreadsheetService service = new SpreadsheetService(APPLICATION_NAME);
-		service.setOAuth2Credentials(createCredential(SpreadsheetAPI.SCOPES, false));
-		service.setConnectTimeout(120 * 1000);
-		return service;
+	private Sheets spreadsheetService() throws GeneralSecurityException, IOException {
+		Credential credential = createCredential(SpreadsheetAPI.SCOPES, false);
+		return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(),
+				JacksonFactory.getDefaultInstance(), credential)
+				.setApplicationName(APPLICATION_NAME)
+				.build();
 	}
 
 	private Drive driveService() {
