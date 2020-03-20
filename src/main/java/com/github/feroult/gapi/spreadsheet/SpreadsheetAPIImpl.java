@@ -10,15 +10,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 class SpreadsheetAPIImpl implements SpreadsheetAPI {
-
-//	private static final int MAX_BATCH_ROWS = 500;
-
 	private Sheets sheetsService;
 	private Spreadsheet spreadsheet;
 	private Sheet worksheet;
 
 	SpreadsheetAPIImpl(Sheets sheetsService) {
-//		this.spreadsheetService.setConnectTimeout(4 * 60 * 1000);
 		this.sheetsService = sheetsService;
 	}
 
