@@ -43,14 +43,14 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-	public void setValue(int i, int j, String value) {
+	public void setValue(int row, int col, String value) {
 		List<List<Object>> values = Collections.singletonList(
 				Collections.singletonList(value)
 		);
 
 		ValueRange body = new ValueRange().setValues(values);
 
-		String range = getRange(i, j);
+		String range = getRange(row, col);
 
 		try {
 			sheetsService.spreadsheets().values()
@@ -64,8 +64,8 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-	public String getValue(int i, int j) {
-		String range = getRange(i, j);
+	public String getValue(int row, int col) {
+		String range = getRange(row, col);
 
 		ValueRange response;
 		try {
