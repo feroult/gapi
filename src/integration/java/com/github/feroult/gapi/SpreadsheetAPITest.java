@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Ignore
 public class SpreadsheetAPITest {
 
 	private final String[][] peopleTable = new String[][]{{"id", "name", "age"}, {"1", "John", "10"}, {"2", "Anne", "15"}};
+	private final String[][] projecTable = new String[][]{{"Project ID", "Project Name"}, {"123", "Project 1"}, {"321", "Project 2"}};
 
 	private GoogleAPI google;
 
@@ -75,6 +77,26 @@ public class SpreadsheetAPITest {
 			assertEquals("1", record.get("id"));
 			assertEquals("John", record.get("name"));
 			assertEquals("10", record.get("age"));
+
+		} finally {
+			google.drive().delete(key);
+		}
+	}
+
+	@Test
+	public void testNormalizeKeysAsMap() {
+		String key = google.drive().createSpreadsheet();
+
+		try {
+			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(projecTable));
+
+			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMap();
+
+			Map<String, String> record = records.get(0);
+			assertNull(record.get("Project ID"));
+			assertNull(record.get("Project Name"));
+			assertEquals("123", record.get("projectid"));
+			assertEquals("Project 1", record.get("projectname"));
 
 		} finally {
 			google.drive().delete(key);

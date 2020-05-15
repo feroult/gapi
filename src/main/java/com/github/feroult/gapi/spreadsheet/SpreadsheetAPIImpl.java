@@ -226,18 +226,18 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 
 		List<List<Object>> body = response.getValues();
-		List<Object> header = body.get(0);
+		List<String> header = convertObjectToString(body.get(0));
 		body.remove(0);
 		return listToMap(header, body);
 	}
 
-	private List<Map<String, String>> listToMap(List<Object> header, List<List<Object>> body) {
+	private List<Map<String, String>> listToMap(List<String> header, List<List<Object>> body) {
 		List<Map<String, String>> ret = new ArrayList<>();
 
 		if (body.isEmpty()) {
-			for (Object item : header) {
+			for (String item : header) {
 				Map<String, String> row = new HashMap<>();
-				row.put(item.toString(), "");
+				row.put(item, "");
 
 				ret.add(row);
 			}
@@ -249,11 +249,21 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 					if (objects.size() - 1 >= j) {
 						value = objects.get(j).toString();
 					}
-					row.put(header.get(j).toString(), value);
+					row.put(header.get(j), value);
 				}
 				ret.add(row);
 			}
 		}
 		return ret;
+	}
+
+	private List<String> convertObjectToString(List<Object> objects) {
+		List<String> strings = new ArrayList<>();
+		objects.forEach(obj -> strings.add(normalize(obj.toString())));
+		return strings;
+	}
+
+	private String normalize(String str) {
+		return str.replace(" ", "").toLowerCase();
 	}
 }
