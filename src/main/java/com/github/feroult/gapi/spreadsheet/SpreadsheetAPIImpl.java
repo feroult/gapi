@@ -226,6 +226,9 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 
 		List<List<Object>> body = response.getValues();
+		if (body == null) {
+			return new ArrayList<>();
+		}
 		List<String> header = convertObjectToString(body.get(0));
 		body.remove(0);
 		return listToMap(header, body);
