@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 public class SpreadsheetAPITest {
 
 	private final String[][] peopleTable = new String[][]{{"id", "name", "age"}, {"1", "John", "10"}, {"2", "Anne", "15"}};
-	private final String[][] projecTable = new String[][]{{"Project ID", "Project Name"}, {"123", "Project 1"}, {"321", "Project 2"}};
+	private final String[][] projecTable = new String[][]{{"(Project ID)", "Project Name"}, {"123", "Project 1"}, {"321", "Project 2"}};
 
 	private GoogleAPI google;
 
@@ -50,13 +50,13 @@ public class SpreadsheetAPITest {
 
 		try {
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(threeRowsTable));
-			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMap().size());
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
 
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable));
-			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMap().size());
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
 
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable), BatchOptions.SHRINK);
-			assertEquals(1, google.spreadsheet(key).worksheet("xpto").asMap().size());
+			assertEquals(1, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
 
 		} finally {
 			google.drive().delete(key);
@@ -71,7 +71,7 @@ public class SpreadsheetAPITest {
 		try {
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(peopleTable));
 
-			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMap();
+			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize();
 
 			Map<String, String> record = records.get(0);
 			assertEquals("1", record.get("id"));
@@ -93,7 +93,7 @@ public class SpreadsheetAPITest {
 			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMap();
 
 			Map<String, String> record = records.get(0);
-			assertNull(record.get("Project ID"));
+			assertNull(record.get("(Project ID)"));
 			assertNull(record.get("Project Name"));
 			assertEquals("123", record.get("projectid"));
 			assertEquals("Project 1", record.get("projectname"));
