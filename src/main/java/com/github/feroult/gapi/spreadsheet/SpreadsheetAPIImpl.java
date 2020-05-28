@@ -214,16 +214,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public List<Map<String, String>> asMap() {
-		String range = worksheet.getProperties().getTitle();
-
-		ValueRange response;
-		try {
-			response = sheetsService.spreadsheets().values()
-					.get(spreadsheet.getSpreadsheetId(), range)
-					.execute();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		ValueRange response = getAllValues(worksheet.getProperties().getTitle());
 
 		List<List<Object>> body = response.getValues();
 		if (body == null) {
@@ -231,6 +222,22 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		}
 		List<String> header = convertObjectToString(body.get(0));
 		body.remove(0);
+		return listToMap(header, body);
+	}
+
+	@Override
+	public List<Map<String, String>> asMapWithoutNormalize() {
+		ValueRange response = getAllValues(worksheet.getProperties().getTitle());
+
+		List<List<Object>> body = response.getValues();
+		List<String> header;
+		try {
+			header = body.get(0).stream().map(Object::toString).collect(Collectors.toList());
+			body.remove(0);
+		} catch (NullPointerException e) {
+			throw new RuntimeException(e);
+		}
+
 		return listToMap(header, body);
 	}
 
@@ -260,6 +267,18 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 		return ret;
 	}
 
+	private ValueRange getAllValues(String range) {
+		ValueRange response;
+		try {
+			response = sheetsService.spreadsheets().values()
+					.get(spreadsheet.getSpreadsheetId(), range)
+					.execute();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+
 	private List<String> convertObjectToString(List<Object> objects) {
 		List<String> strings = new ArrayList<>();
 		objects.forEach(obj -> strings.add(normalize(obj.toString())));
@@ -267,6 +286,11 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	private String normalize(String str) {
-		return str.replace(" ", "").toLowerCase();
+		String[] specialCharacteres = new String[]{" ", "/", "\\", "(", ")", "[", "]", "{", "}", "*", "+", "=", ",", "_"};
+		String replacedString = str;
+		for (String charactere : specialCharacteres) {
+			replacedString = replacedString.replace(charactere, "");
+		}
+		return replacedString.toLowerCase();
 	}
 }
