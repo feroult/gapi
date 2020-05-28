@@ -25,6 +25,6 @@ public interface SpreadsheetAPI {
 
 	List<Map<String, String>> asMap();
 
-	List<Map<String, String>> asMapWithoutNormalize();
+	List<Map<String, String>> asMapWithoutNormalization();
 
 }

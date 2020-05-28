@@ -226,7 +226,7 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 	}
 
 	@Override
-	public List<Map<String, String>> asMapWithoutNormalize() {
+	public List<Map<String, String>> asMapWithoutNormalization() {
 		ValueRange response = getAllValues(worksheet.getProperties().getTitle());
 
 		List<List<Object>> body = response.getValues();

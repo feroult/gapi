@@ -50,13 +50,13 @@ public class SpreadsheetAPITest {
 
 		try {
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(threeRowsTable));
-			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalization().size());
 
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable));
-			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
+			assertEquals(2, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalization().size());
 
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(twoRowsTable), BatchOptions.SHRINK);
-			assertEquals(1, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize().size());
+			assertEquals(1, google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalization().size());
 
 		} finally {
 			google.drive().delete(key);
@@ -71,7 +71,7 @@ public class SpreadsheetAPITest {
 		try {
 			google.spreadsheet(key).worksheet("xpto").batch(new MockTableBatch(peopleTable));
 
-			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalize();
+			List<Map<String, String>> records = google.spreadsheet(key).worksheet("xpto").asMapWithoutNormalization();
 
 			Map<String, String> record = records.get(0);
 			assertEquals("1", record.get("id"));
