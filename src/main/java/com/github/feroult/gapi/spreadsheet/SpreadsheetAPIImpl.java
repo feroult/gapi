@@ -214,30 +214,40 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 
 	@Override
 	public List<Map<String, String>> asMap() {
-		String range = worksheet.getProperties().getTitle();
-
-		ValueRange response;
-		try {
-			response = sheetsService.spreadsheets().values()
-					.get(spreadsheet.getSpreadsheetId(), range)
-					.execute();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		ValueRange response = getAllValues(worksheet.getProperties().getTitle());
 
 		List<List<Object>> body = response.getValues();
-		List<Object> header = body.get(0);
+		if (body == null) {
+			return new ArrayList<>();
+		}
+		List<String> header = convertObjectToString(body.get(0));
 		body.remove(0);
 		return listToMap(header, body);
 	}
 
-	private List<Map<String, String>> listToMap(List<Object> header, List<List<Object>> body) {
+	@Override
+	public List<Map<String, String>> asMapWithoutNormalization() {
+		ValueRange response = getAllValues(worksheet.getProperties().getTitle());
+
+		List<List<Object>> body = response.getValues();
+		List<String> header;
+		try {
+			header = body.get(0).stream().map(Object::toString).collect(Collectors.toList());
+			body.remove(0);
+		} catch (NullPointerException e) {
+			throw new RuntimeException(e);
+		}
+
+		return listToMap(header, body);
+	}
+
+	private List<Map<String, String>> listToMap(List<String> header, List<List<Object>> body) {
 		List<Map<String, String>> ret = new ArrayList<>();
 
 		if (body.isEmpty()) {
-			for (Object item : header) {
+			for (String item : header) {
 				Map<String, String> row = new HashMap<>();
-				row.put(item.toString(), "");
+				row.put(item, "");
 
 				ret.add(row);
 			}
@@ -249,11 +259,38 @@ class SpreadsheetAPIImpl implements SpreadsheetAPI {
 					if (objects.size() - 1 >= j) {
 						value = objects.get(j).toString();
 					}
-					row.put(header.get(j).toString(), value);
+					row.put(header.get(j), value);
 				}
 				ret.add(row);
 			}
 		}
 		return ret;
+	}
+
+	private ValueRange getAllValues(String range) {
+		ValueRange response;
+		try {
+			response = sheetsService.spreadsheets().values()
+					.get(spreadsheet.getSpreadsheetId(), range)
+					.execute();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+
+	private List<String> convertObjectToString(List<Object> objects) {
+		List<String> strings = new ArrayList<>();
+		objects.forEach(obj -> strings.add(normalize(obj.toString())));
+		return strings;
+	}
+
+	private String normalize(String str) {
+		String[] specialCharacteres = new String[]{" ", "/", "\\", "(", ")", "[", "]", "{", "}", "*", "+", "=", ",", "_"};
+		String replacedString = str;
+		for (String charactere : specialCharacteres) {
+			replacedString = replacedString.replace(charactere, "");
+		}
+		return replacedString.toLowerCase();
 	}
 }
